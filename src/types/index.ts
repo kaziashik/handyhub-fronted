@@ -56,6 +56,18 @@ export type TodaySchedule = {
   };
 };
 
+export type ScheduleStatus = "DRAFT" | "PUBLISHED";
+
+export type TechnicianSchedule = {
+  id: string;
+  status: ScheduleStatus;
+  startDateTime: string;
+  endDateTime: string;
+  totalSlots: number;
+  availableSlots: number;
+  meetingLink: string;
+};
+
 export type AppointmentStatus =
   | "PENDING"
   | "CONFIRMED"

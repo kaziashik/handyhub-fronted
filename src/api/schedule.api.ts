@@ -1,5 +1,10 @@
 import { api } from "@/lib/api-client";
-import type { ApiResponse, ListQuery, TodaySchedule } from "@/types";
+import type {
+  ApiResponse,
+  ListQuery,
+  TechnicianSchedule,
+  TodaySchedule,
+} from "@/types";
 
 export function createSchedule(body: {
   startDateTime: string;
@@ -13,7 +18,9 @@ export function createSchedule(body: {
 }
 
 export function getMySchedules(query?: ListQuery) {
-  return api<ApiResponse<unknown[]>>("/schedule/my-schedules", { query });
+  return api<ApiResponse<TechnicianSchedule[]>>("/schedule/my-schedules", {
+    query,
+  });
 }
 
 export function getAllSchedules(query?: ListQuery) {
