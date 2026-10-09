@@ -22,6 +22,18 @@ export type AuthUser = {
   role: Role;
 };
 
+export type TodaySchedule = {
+  id: string;
+  startDateTime: string;
+  endDateTime: string;
+  availableSlots: number;
+  techinician: {
+    id: string;
+    name: string;
+    consultationFee: string | number | null;
+  };
+};
+
 export type ListQuery = {
   page?: number;
   limit?: number;
