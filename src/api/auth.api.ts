@@ -26,15 +26,71 @@ export function login(body: { email: string; password: string }) {
   );
 }
 
+function responseMessage(error: FetchError) {
+  const body = error.data;
+  if (
+    body &&
+    typeof body === "object" &&
+    "message" in body &&
+    typeof body.message === "string"
+  ) {
+    return body.message;
+  }
+  return error.message;
+}
+
+function shouldRefreshSession(error: unknown) {
+  if (!(error instanceof FetchError) || !error.statusCode) {
+    return false;
+  }
+
+  const message = responseMessage(error).toLowerCase();
+  return (
+    message.includes("jwt expired") ||
+    message.includes("not logged in") ||
+    message.includes("invalid token") ||
+    message.includes("jwt malformed")
+  );
+}
+
+async function readMe() {
+  return api<ApiResponse<AuthUser>>("/auth/me");
+}
+
 export async function getMe() {
   try {
-    return await api<ApiResponse<AuthUser>>("/auth/me");
+    return await readMe();
+  } catch (error) {
+    if (!shouldRefreshSession(error)) {
+      if (error instanceof FetchError && error.statusCode) {
+        return null;
+      }
+      throw error;
+    }
+  }
+
+  try {
+    await refreshSession();
+    return await readMe();
   } catch (error) {
     if (error instanceof FetchError && error.statusCode) {
       return null;
     }
     throw error;
   }
+}
+
+let refreshRequest: Promise<
+  ApiResponse<{ accessToken: string; refreshToken: string }>
+> | null = null;
+
+function refreshSession() {
+  if (!refreshRequest) {
+    refreshRequest = refreshToken().finally(() => {
+      refreshRequest = null;
+    });
+  }
+  return refreshRequest;
 }
 
 export function refreshToken() {
