@@ -1,5 +1,10 @@
 import { api } from "@/lib/api-client";
-import type { ApiResponse, CustomerAppointment, ListQuery } from "@/types";
+import type {
+  ApiResponse,
+  AppointmentDetail,
+  CustomerAppointment,
+  ListQuery,
+} from "@/types";
 
 export function bookAppointment(body: { scheduleId: string }) {
   return api<ApiResponse<{ paymentUrl: string }>>(
@@ -41,7 +46,9 @@ export function getAllAppointments(query?: ListQuery) {
 }
 
 export function getAppointment(appointmentId: string) {
-  return api<ApiResponse<unknown>>(`/appointment/${appointmentId}`);
+  return api<ApiResponse<AppointmentDetail>>(
+    `/appointment/${encodeURIComponent(appointmentId)}`,
+  );
 }
 
 export function updateAppointmentStatus(

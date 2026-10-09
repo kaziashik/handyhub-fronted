@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import type { AppointmentStatus } from "@/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FetchError } from "ofetch";
 import { useState } from "react";
@@ -181,6 +182,12 @@ export function MyAppointments() {
           {appointments.data?.data.map((appointment) => (
             <li key={appointment.id} className="rounded-lg border p-4">
               <p className="font-medium">{appointment.techinician.name}</p>
+              <Link
+                href={`/customer/appointments/${appointment.id}`}
+                className="text-sm underline-offset-4 hover:underline"
+              >
+                Details
+              </Link>
               <p className="text-sm text-muted-foreground">
                 {appointment.techinician.specialization}
               </p>

@@ -71,6 +71,31 @@ export type CustomerAppointment = {
   } | null;
 };
 
+export type AppointmentDetail = {
+  id: string;
+  status: AppointmentStatus;
+  techinician: {
+    id: string;
+    name: string;
+    specialization: string;
+  };
+  schedule: {
+    id: string;
+    startDateTime: string;
+    endDateTime: string;
+    meetingLink: string;
+  };
+  payment: {
+    status: string;
+    amount: string | number;
+    currency: string;
+    paidAt: string | null;
+    refundAmount: string | number | null;
+    refundReason: string | null;
+    refundedAt: string | null;
+  } | null;
+};
+
 export type ListQuery = {
   page?: number;
   limit?: number;
