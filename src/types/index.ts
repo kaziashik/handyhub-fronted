@@ -23,6 +23,19 @@ export type AuthUser = {
   imageUrl?: string;
 };
 
+export type AdminAnalytics = {
+  totalTechician: number;
+  totalPendingTechicianApplications: number;
+  totalApprovedTechician: number;
+  totalRejectedTechician: number;
+  totalCustomer: number;
+  totalAppointments: number;
+  totalCompletedAppointments: number;
+  totalCancelledAppointments: number;
+  totalRevenue: number;
+  totalRefunded: number;
+};
+
 export type TechnicianAnalytics = {
   totalSchedules: number;
   publishedSchedules: number;

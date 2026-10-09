@@ -1,5 +1,10 @@
 import { api } from "@/lib/api-client";
-import type { ApiResponse, CustomerAnalytics, TechnicianAnalytics } from "@/types";
+import type {
+  AdminAnalytics,
+  ApiResponse,
+  CustomerAnalytics,
+  TechnicianAnalytics,
+} from "@/types";
 
 export function getCustomerAnalytics() {
   return api<ApiResponse<CustomerAnalytics>>("/analytics/customer-analytics");
@@ -10,5 +15,5 @@ export function getTechnicianAnalytics() {
 }
 
 export function getAdminAnalytics() {
-  return api<ApiResponse<unknown>>("/analytics/admin-analytics");
+  return api<ApiResponse<AdminAnalytics>>("/analytics/admin-analytics");
 }
