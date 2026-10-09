@@ -1,11 +1,12 @@
 "use client";
 
-import { getMyAppointments } from "@/api/appointment.api";
+import { getMyAppointments, payAppointment } from "@/api/appointment.api";
 import { Button } from "@/components/ui/button";
 import type { AppointmentStatus } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FetchError } from "ofetch";
+import { useState } from "react";
 
 const statuses: AppointmentStatus[] = [
   "PENDING",
@@ -21,6 +22,14 @@ function listErrorMessage(error: unknown) {
     return body?.message ?? "Could not load appointments";
   }
   return "Could not load appointments";
+}
+
+function payErrorMessage(error: unknown) {
+  if (error instanceof FetchError) {
+    const body = error.data as { message?: string } | undefined;
+    return body?.message ?? "Could not start payment";
+  }
+  return "Could not start payment";
 }
 
 function formatTime(value: string) {
@@ -51,6 +60,32 @@ export function MyAppointments() {
   const searchParams = useSearchParams();
   const page = Math.max(1, Number(searchParams.get("page") ?? "1") || 1);
   const appointmentStatus = searchParams.get("appointmentStatus") ?? "";
+  const [payingId, setPayingId] = useState<string | null>(null);
+  const [payError, setPayError] = useState<{
+    id: string;
+    message: string;
+  } | null>(null);
+
+  async function handlePay(appointmentId: string) {
+    setPayError(null);
+    setPayingId(appointmentId);
+    try {
+      const result = await payAppointment({ appointmentId });
+      const paymentUrl = result.data?.paymentUrl;
+      if (!paymentUrl) {
+        setPayError({
+          id: appointmentId,
+          message: "Payment link was not returned",
+        });
+        setPayingId(null);
+        return;
+      }
+      window.location.assign(paymentUrl);
+    } catch (error) {
+      setPayError({ id: appointmentId, message: payErrorMessage(error) });
+      setPayingId(null);
+    }
+  }
 
   const appointments = useQuery({
     queryKey: ["my-appointments", page, appointmentStatus],
@@ -123,6 +158,22 @@ export function MyAppointments() {
                   {formatAmount(appointment.payment.amount)}{" "}
                   {appointment.payment.currency} · {label(appointment.payment.status)}
                 </p>
+              ) : null}
+              {appointment.status === "PENDING" ? (
+                <div className="mt-3 flex flex-col items-start gap-2">
+                  {payError?.id === appointment.id ? (
+                    <p className="text-sm text-destructive">{payError.message}</p>
+                  ) : null}
+                  <Button
+                    type="button"
+                    disabled={payingId !== null}
+                    onClick={() => handlePay(appointment.id)}
+                  >
+                    {payingId === appointment.id
+                      ? "Opening payment..."
+                      : "Pay with bKash"}
+                  </Button>
+                </div>
               ) : null}
             </li>
           ))}
