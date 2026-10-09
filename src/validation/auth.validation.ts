@@ -38,3 +38,12 @@ export const verifyEmailSchema = z.object({
 export const forgotPasswordSchema = z.object({
   email: z.email(),
 });
+
+export const resetPasswordSchema = z.object({
+  email: z.email(),
+  otp: z
+    .string()
+    .length(6, "OTP must be 6 digits")
+    .regex(/^\d+$/, "OTP must contain only numbers"),
+  newPassword: passwordSchema,
+});
