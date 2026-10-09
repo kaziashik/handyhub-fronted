@@ -12,6 +12,7 @@ import {
   ClipboardList,
   Droplets,
   Refrigerator,
+  Sparkles,
   UserRound,
   Users,
   Wallet,
@@ -57,6 +58,13 @@ const services = [
     href: "/technicians?specialization=Appliance",
     image: "/images/appliance.jpg",
     icon: Refrigerator,
+  },
+  {
+    title: "House cleaning",
+    detail: "Home cleaning visits from an approved cleaner, with a published fee and time.",
+    href: "/technicians?specialization=Cleaning",
+    image: "/images/cleaning.jpg",
+    icon: Sparkles,
   },
   {
     title: "General",
@@ -135,8 +143,8 @@ export function Landing({ schedules }: { schedules: ReactNode }) {
       <section className="relative flex h-[65vh] min-h-[28rem] items-center overflow-hidden border-b">
         <img
           src="/images/hero.jpg"
-          alt=""
-          className="animate-hero absolute inset-0 h-full w-full object-cover"
+          alt="Woman technician in a hard hat and safety vest"
+          className="animate-hero absolute inset-0 h-full w-full object-cover object-[center_22%]"
         />
         <div className="absolute inset-0 bg-slate-950/60" />
         <div key={current.title} className="animate-rise relative mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 text-white">
@@ -182,7 +190,7 @@ export function Landing({ schedules }: { schedules: ReactNode }) {
       </section>
 
       <section className="border-y bg-muted/40">
-        <div className="mx-auto grid w-full max-w-7xl gap-4 px-4 py-12 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mx-auto grid w-full max-w-7xl gap-4 px-4 py-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {services.map((service) => (
             <Link
               key={service.title}

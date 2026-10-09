@@ -3,13 +3,11 @@ import Link from "next/link";
 
 export default function ApplyPage() {
   return (
-    <div className="flex min-h-svh flex-col gap-4 p-6 md:p-10">
-      <div className="flex justify-center gap-2 md:justify-start">
-        <Link href="/" className="font-medium">
+    <div className="min-h-svh bg-muted/30">
+      <div className="mx-auto flex min-h-svh w-full max-w-6xl flex-col gap-6 px-4 py-6 md:px-8 md:py-10">
+        <Link href="/" className="w-fit font-medium">
           HandyHub
         </Link>
-      </div>
-      <div className="flex flex-1 items-center justify-center">
         <ApplyTechnicianForm />
       </div>
     </div>
