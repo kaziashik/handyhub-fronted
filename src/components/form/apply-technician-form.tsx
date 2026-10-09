@@ -4,6 +4,7 @@ import { applyAsTechnician } from "@/api/technician.api";
 import { applyTechnicianSchema } from "@/validation";
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FetchError } from "ofetch";
 import { useState } from "react";
 import { Button } from "../ui/button";
@@ -37,7 +38,7 @@ export default function ApplyTechnicianForm() {
   const [fileMessage, setFileMessage] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [sentTo, setSentTo] = useState<string | null>(null);
+  const router = useRouter();
 
   const form = useForm({
     defaultValues: {
@@ -99,9 +100,10 @@ export default function ApplyTechnicianForm() {
       }
 
       setPending(true);
+      const email = value.email.trim().toLowerCase();
       try {
         await applyAsTechnician(body);
-        setSentTo(value.email.trim().toLowerCase());
+        router.push(`/apply/verify?email=${encodeURIComponent(email)}`);
       } catch (error) {
         setErrorMessage(applyErrorMessage(error));
       } finally {
@@ -109,20 +111,6 @@ export default function ApplyTechnicianForm() {
       }
     },
   });
-
-  if (sentTo) {
-    return (
-      <div className="flex w-full max-w-md flex-col gap-4 text-center">
-        <h1 className="text-2xl font-bold tracking-tight">Application sent</h1>
-        <p className="text-sm text-muted-foreground">
-          A verification code was sent to {sentTo}.
-        </p>
-        <Link href="/" className="text-sm underline">
-          Back to home
-        </Link>
-      </div>
-    );
-  }
 
   return (
     <div className="flex w-full max-w-md flex-col gap-5">
