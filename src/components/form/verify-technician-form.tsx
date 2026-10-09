@@ -3,7 +3,7 @@
 import { verifyTechnicianEmail } from "@/api/technician.api";
 import { verifyEmailSchema } from "@/validation";
 import { useForm } from "@tanstack/react-form";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FetchError } from "ofetch";
 import { useState } from "react";
 import { Button } from "../ui/button";
@@ -19,9 +19,9 @@ function verifyErrorMessage(error: unknown) {
 }
 
 export default function VerifyTechnicianForm({ email }: { email: string }) {
+  const router = useRouter();
   const [pending, setPending] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [verified, setVerified] = useState(false);
 
   const form = useForm({
     defaultValues: {
@@ -39,7 +39,7 @@ export default function VerifyTechnicianForm({ email }: { email: string }) {
           email: value.email.trim().toLowerCase(),
           otp: value.otp,
         });
-        setVerified(true);
+        router.push("/apply/success");
       } catch (error) {
         setErrorMessage(verifyErrorMessage(error));
       } finally {
@@ -47,20 +47,6 @@ export default function VerifyTechnicianForm({ email }: { email: string }) {
       }
     },
   });
-
-  if (verified) {
-    return (
-      <div className="flex w-full max-w-xs flex-col gap-4 text-center">
-        <h1 className="text-2xl font-bold tracking-tight">Email verified</h1>
-        <p className="text-sm text-muted-foreground">
-          An admin can review your application now.
-        </p>
-        <Link href="/" className="text-sm underline">
-          Back to home
-        </Link>
-      </div>
-    );
-  }
 
   return (
     <div className="flex w-full max-w-xs flex-col gap-5">
