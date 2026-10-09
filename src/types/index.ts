@@ -22,6 +22,15 @@ export type AuthUser = {
   role: Role;
 };
 
+export type CustomerAnalytics = {
+  totalAppointments: number;
+  upcomingAppointments: number;
+  completedAppointments: number;
+  cancelledAppointments: number;
+  totalAmountSpent: number;
+  totalRefunded: number;
+};
+
 export type TodaySchedule = {
   id: string;
   startDateTime: string;

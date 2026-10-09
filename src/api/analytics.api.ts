@@ -1,8 +1,8 @@
 import { api } from "@/lib/api-client";
-import type { ApiResponse } from "@/types";
+import type { ApiResponse, CustomerAnalytics } from "@/types";
 
 export function getCustomerAnalytics() {
-  return api<ApiResponse<unknown>>("/analytics/customer-analytics");
+  return api<ApiResponse<CustomerAnalytics>>("/analytics/customer-analytics");
 }
 
 export function getTechnicianAnalytics() {
