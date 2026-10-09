@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HandyHub frontend plan</title>
+    <style>
+      :root {
+        --bg: #f3f0e8;
+        --paper: #fffcf7;
+        --ink: #1c1915;
+        --muted: #6b645b;
+        --line: #e3dcd0;
+        --accent: #0c6b52;
+        --accent-soft: #e5f4ef;
+        --warn: #8a5a12;
+        --warn-soft: #f8efd8;
+        --shadow: 0 1px 0 rgba(28, 25, 21, 0.04);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: var(--bg);
+        font-family: "Segoe UI", system-ui, sans-serif;
+        line-height: 1.45;
+      }
+
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: rgba(243, 240, 232, 0.94);
+        border-bottom: 1px solid var(--line);
+        backdrop-filter: blur(8px);
+      }
+
+      .wrap {
+        width: min(920px, calc(100% - 32px));
+        margin: 0 auto;
+      }
+
+      .top {
+        padding: 18px 0 16px;
+      }
+
+      h1 {
+        margin: 0 0 4px;
+        font-size: 1.45rem;
+        letter-spacing: -0.02em;
+      }
+
+      .sub {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      .meter {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px 16px;
+        align-items: end;
+        margin-top: 14px;
+      }
+
+      .bar {
+        height: 10px;
+        border-radius: 999px;
+        background: #e6e0d4;
+        overflow: hidden;
+      }
+
+      .bar > span {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: var(--accent);
+        border-radius: inherit;
+        transition: width 0.2s ease;
+      }
+
+      .pct {
+        font-size: 1.35rem;
+        font-weight: 650;
+        letter-spacing: -0.03em;
+        line-height: 1;
+      }
+
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 16px;
+        align-items: center;
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+
+      button,
+      .filter {
+        font: inherit;
+      }
+
+      button {
+        border: 1px solid var(--line);
+        background: var(--paper);
+        color: var(--ink);
+        border-radius: 8px;
+        padding: 6px 10px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        border-color: #cfc6b6;
+      }
+
+      button.danger:hover {
+        border-color: #c9a3a3;
+        color: #7a2e2e;
+      }
+
+      main {
+        padding: 22px 0 64px;
+      }
+
+      .note-box {
+        background: var(--warn-soft);
+        color: var(--warn);
+        border-radius: 12px;
+        padding: 12px 14px;
+        margin-bottom: 18px;
+        font-size: 0.92rem;
+      }
+
+      .filters {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+
+      .filter {
+        border: 1px solid var(--line);
+        background: transparent;
+        border-radius: 999px;
+        padding: 6px 12px;
+        cursor: pointer;
+        color: var(--muted);
+      }
+
+      .filter[aria-pressed="true"] {
+        background: var(--ink);
+        color: #fff;
+        border-color: var(--ink);
+      }
+
+      section {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        margin-bottom: 14px;
+        box-shadow: var(--shadow);
+      }
+
+      .phase-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: flex-start;
+        padding: 14px 16px 10px;
+      }
+
+      h2 {
+        margin: 0;
+        font-size: 1.05rem;
+      }
+
+      .phase-copy {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 0.86rem;
+      }
+
+      .phase-pct {
+        font-variant-numeric: tabular-nums;
+        font-weight: 650;
+        color: var(--accent);
+        white-space: nowrap;
+      }
+
+      .mini {
+        width: 88px;
+        height: 6px;
+        margin-top: 6px;
+        margin-left: auto;
+        border-radius: 999px;
+        background: #e6e0d4;
+        overflow: hidden;
+      }
+
+      .mini > span {
+        display: block;
+        height: 100%;
+        background: var(--accent);
+      }
+
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0 10px 10px;
+      }
+
+      li {
+        border-top: 1px solid var(--line);
+        padding: 10px 6px;
+      }
+
+      li.hidden {
+        display: none;
+      }
+
+      .task {
+        display: grid;
+        grid-template-columns: 22px 1fr;
+        gap: 10px;
+        align-items: start;
+        cursor: pointer;
+      }
+
+      input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+        accent-color: var(--accent);
+      }
+
+      .title {
+        font-weight: 600;
+      }
+
+      li.done .title {
+        text-decoration: line-through;
+        color: var(--muted);
+      }
+
+      .detail {
+        display: block;
+        color: var(--muted);
+        font-size: 0.86rem;
+        font-weight: 400;
+        margin-top: 2px;
+      }
+
+      .api {
+        display: inline-block;
+        margin-top: 6px;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 0.78rem;
+        background: var(--accent-soft);
+        color: var(--accent);
+        border-radius: 6px;
+        padding: 2px 6px;
+      }
+
+      .note {
+        width: calc(100% - 32px);
+        margin: 8px 0 2px 32px;
+        border: 1px solid var(--line);
+        background: #faf7f2;
+        border-radius: 8px;
+        padding: 8px 10px;
+        font: inherit;
+        color: var(--ink);
+      }
+
+      .note:focus {
+        outline: 2px solid #b7ddd1;
+        border-color: var(--accent);
+      }
+
+      .empty {
+        display: none;
+        text-align: center;
+        color: var(--muted);
+        padding: 28px 0;
+      }
+
+      .empty.show {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap top">
+        <h1>HandyHub frontend plan</h1>
+        <p class="sub">
+          Tick a task when it is done. Your ticks and notes stay in this browser
+          through local storage.
+        </p>
+        <div class="meter">
+          <div>
+            <div class="bar" aria-hidden="true"><span id="bar"></span></div>
+          </div>
+          <div class="pct" id="pct">0%</div>
+        </div>
+        <div class="meta">
+          <span id="count">0 of 0 tasks</span>
+          <span id="saved">Not saved yet</span>
+          <button type="button" id="clear" class="danger">Clear progress</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <div class="note-box">
+        Build this inside <strong>handyhub-fronted</strong>. Register is customer
+        only. Technicians apply, wait for admin approval, then use Forgot
+        password — the approval email does not include the generated password.
+        Keep the API spellings: techinician, techician-analytics, doctor-appointments.
+      </div>
+
+      <div class="filters" role="group" aria-label="Filter tasks">
+        <button type="button" class="filter" data-filter="all" aria-pressed="true">All</button>
+        <button type="button" class="filter" data-filter="open" aria-pressed="false">Still to do</button>
+        <button type="button" class="filter" data-filter="done" aria-pressed="false">Done</button>
+      </div>
+
+      <div id="phases"></div>
+      <p class="empty" id="empty">Nothing in this filter.</p>
+    </main>
+
+    <script>
+      const STORAGE_KEY = "handyhub-frontend-plan-v1";
+
+      const phases = [
+        {
+          id: "p1",
+          title: "1. Session and auth",
+          summary: "Nothing else works until login, OTP, and the session cookie do.",
+          tasks: [
+            {
+              id: "p1-env",
+              title: "Add the API base URL",
+              detail: "Create .env.local with NEXT_PUBLIC_API_URL pointing at the backend.",
+            },
+            {
+              id: "p1-client",
+              title: "Create the API client",
+              detail: "One ofetch instance that always sends cookies with credentials: include.",
+            },
+            {
+              id: "p1-me",
+              title: "Load the current user",
+              detail: "On app start, call /me and keep the user in React Query.",
+              api: "GET /api/v1/auth/me",
+            },
+            {
+              id: "p1-refresh",
+              title: "Refresh an expired session",
+              detail: "If /me fails because the access cookie expired, refresh, then call /me again.",
+              api: "POST /api/v1/auth/refresh-token",
+            },
+            {
+              id: "p1-login",
+              title: "Wire the login form",
+              detail: "The form already validates. Send it to the API and redirect by role.",
+              api: "POST /api/v1/auth/login",
+            },
+            {
+              id: "p1-register",
+              title: "Customer registration",
+              detail: "Role is CUSTOMER only. After success, go to the OTP page with the email.",
+              api: "POST /api/v1/auth/register",
+            },
+            {
+              id: "p1-verify",
+              title: "Email OTP verification",
+              detail: "Six-digit code. Success sets the session and opens the customer dashboard.",
+              api: "POST /api/v1/auth/verify-email",
+            },
+            {
+              id: "p1-forgot",
+              title: "Forgot password",
+              detail: "Ask for email and tell the user the OTP was sent.",
+              api: "POST /api/v1/auth/forgot-password",
+            },
+            {
+              id: "p1-reset",
+              title: "Reset password",
+              detail: "Email, OTP, and a new password that matches the backend rules.",
+              api: "POST /api/v1/auth/reset-password",
+            },
+            {
+              id: "p1-logout",
+              title: "Logout",
+              detail: "Clear the session and return to the public home page.",
+              api: "POST /api/v1/auth/logout",
+            },
+            {
+              id: "p1-google",
+              title: "Google login",
+              detail: "Optional. Send the Google id token, then use the same session as password login.",
+              api: "POST /api/v1/auth/google",
+            },
+            {
+              id: "p1-header",
+              title: "Header session state",
+              detail: "Logged out shows Login. Logged in shows the name and Logout.",
+            },
+            {
+              id: "p1-guard",
+              title: "Role guard",
+              detail: "Customer, technician, and admin each land on their own dashboard and cannot open the others.",
+            },
+          ],
+        },
+        {
+          id: "p2",
+          title: "2. Public site",
+          summary: "Anyone can browse today's schedules and apply as a technician.",
+          tasks: [
+            {
+              id: "p2-home",
+              title: "Home lists today's schedules",
+              detail: "Show technician, time, fee, and open slots.",
+              api: "GET /api/v1/schedule/todays-schedule",
+            },
+            {
+              id: "p2-book-gate",
+              title: "Book button sends people to the right place",
+              detail: "A guest goes to login. A logged-in customer goes to the book flow.",
+            },
+            {
+              id: "p2-about",
+              title: "About page",
+              detail: "The header already links to /about-us. Add that page.",
+            },
+            {
+              id: "p2-apply",
+              title: "Technician application form",
+              detail: "Multipart: JSON field named data, plus resume and additionalFiles.",
+              api: "POST /api/v1/techinician/apply-as-techinician",
+            },
+            {
+              id: "p2-apply-verify",
+              title: "Technician email OTP",
+              detail: "Verify the application email before an admin can review it.",
+              api: "POST /api/v1/techinician/apply-as-techinician/verify-email",
+            },
+            {
+              id: "p2-apply-done",
+              title: "Application success screen",
+              detail: "Tell them to wait for approval, then use Forgot password and log in.",
+            },
+          ],
+        },
+        {
+          id: "p3",
+          title: "3. Customer dashboard",
+          summary: "Book today's published slot, pay with bKash, and manage appointments.",
+          tasks: [
+            {
+              id: "p3-layout",
+              title: "Customer layout",
+              detail: "Sidebar: Overview, Schedules, Appointments, Profile.",
+            },
+            {
+              id: "p3-analytics",
+              title: "Customer overview",
+              detail: "Totals, upcoming, completed, cancelled, amount spent, refunded.",
+              api: "GET /api/v1/analytics/customer-analytics",
+            },
+            {
+              id: "p3-schedules",
+              title: "Dashboard schedule list",
+              detail: "Same today's schedules, with a Book action.",
+              api: "GET /api/v1/schedule/todays-schedule",
+            },
+            {
+              id: "p3-book",
+              title: "Book and open bKash",
+              detail: "Send scheduleId. Redirect the browser to paymentUrl.",
+              api: "POST /api/v1/appointment/book-appointment",
+            },
+            {
+              id: "p3-list",
+              title: "My appointments",
+              detail: "List with status filter and page controls.",
+              api: "GET /api/v1/appointment/my-appointments",
+            },
+            {
+              id: "p3-pay",
+              title: "Pay a pending appointment",
+              detail: "Start bKash again for an appointment that is still pending.",
+              api: "POST /api/v1/appointment/pay-appointment",
+            },
+            {
+              id: "p3-cancel",
+              title: "Cancel an appointment",
+              detail: "Allowed before the visit is ongoing or completed.",
+              api: "POST /api/v1/appointment/cancel-appointment",
+            },
+            {
+              id: "p3-detail",
+              title: "Appointment detail",
+              detail: "Schedule, technician, payment, and status.",
+              api: "GET /api/v1/appointment/:appointmentId",
+            },
+            {
+              id: "p3-return",
+              title: "bKash return message",
+              detail: "Read ?status=success, failure, or cancel on /dashboard/my-appointments.",
+            },
+            {
+              id: "p3-photo",
+              title: "Profile photo",
+              detail: "Upload a file with the field name profileImage.",
+              api: "PATCH /api/v1/users/profile-image",
+            },
+          ],
+        },
+        {
+          id: "p4",
+          title: "4. Technician dashboard",
+          summary: "Publish a schedule, then move a visit from confirmed to completed.",
+          tasks: [
+            {
+              id: "p4-layout",
+              title: "Technician layout",
+              detail: "Sidebar: Overview, My schedules, Appointments, Profile.",
+            },
+            {
+              id: "p4-analytics",
+              title: "Technician overview",
+              detail: "Schedules, appointments, earnings, and refunds.",
+              api: "GET /api/v1/analytics/techician-analytics",
+            },
+            {
+              id: "p4-list",
+              title: "My schedules",
+              detail: "Draft and published schedules for this technician.",
+              api: "GET /api/v1/schedule/my-schedules",
+            },
+            {
+              id: "p4-create",
+              title: "Create a schedule",
+              detail: "Same calendar day, end after start, at least 20 minutes, one schedule per day.",
+              api: "POST /api/v1/schedule/create-schedule",
+            },
+            {
+              id: "p4-edit",
+              title: "Edit a draft schedule",
+              api: "PATCH /api/v1/schedule/update-schedule/:scheduleId",
+            },
+            {
+              id: "p4-publish",
+              title: "Publish a schedule",
+              detail: "Customers can book only after it is published.",
+              api: "PATCH /api/v1/schedule/publish-schedule/:scheduleId",
+            },
+            {
+              id: "p4-delete",
+              title: "Delete a schedule",
+              api: "DELETE /api/v1/schedule/:scheduleId",
+            },
+            {
+              id: "p4-appts",
+              title: "Technician appointments",
+              detail: "List the visits booked on this technician.",
+              api: "GET /api/v1/appointment/doctor-appointments",
+            },
+            {
+              id: "p4-status",
+              title: "Update appointment status",
+              detail: "Confirmed can become Ongoing. Ongoing can become Completed. No other jump.",
+              api: "PATCH /api/v1/appointment/update-status/:appointmentId",
+            },
+            {
+              id: "p4-photo",
+              title: "Profile photo",
+              api: "PATCH /api/v1/users/profile-image",
+            },
+          ],
+        },
+        {
+          id: "p5",
+          title: "5. Admin dashboard",
+          summary: "Approve technicians and see every appointment and schedule.",
+          tasks: [
+            {
+              id: "p5-layout",
+              title: "Admin layout",
+              detail: "Sidebar: Overview, Technicians, Appointments, Schedules.",
+            },
+            {
+              id: "p5-analytics",
+              title: "Admin overview",
+              detail: "Technicians, customers, appointments, revenue, refunds.",
+              api: "GET /api/v1/analytics/admin-analytics",
+            },
+            {
+              id: "p5-techs",
+              title: "Technician applications",
+              detail: "Search and filter by verification status.",
+              api: "GET /api/v1/techinician/all-techinician",
+            },
+            {
+              id: "p5-review",
+              title: "Approve or reject",
+              detail: "Reject requires a reason. Only a pending, email-verified application can be reviewed.",
+              api: "POST /api/v1/techinician/approve-techinician",
+            },
+            {
+              id: "p5-appts",
+              title: "All appointments",
+              api: "GET /api/v1/appointment/all-appointments",
+            },
+            {
+              id: "p5-cancel",
+              title: "Admin cancel",
+              detail: "An admin can cancel any appointment, not only their own.",
+              api: "POST /api/v1/appointment/cancel-appointment",
+            },
+            {
+              id: "p5-schedules",
+              title: "All schedules",
+              detail: "View the list and one schedule. Admin does not edit or delete.",
+              api: "GET /api/v1/schedule/all-schedules",
+            },
+          ],
+        },
+        {
+          id: "p6",
+          title: "6. Finish",
+          summary: "The three roles work on a phone and on a desktop against the real API.",
+          tasks: [
+            {
+              id: "p6-states",
+              title: "Loading, empty, and error states",
+              detail: "Every list shows what is happening, including when the API fails.",
+            },
+            {
+              id: "p6-pages",
+              title: "Pagination",
+              detail: "Send page, limit, sortBy, and sortOrder. Show the page controls.",
+            },
+            {
+              id: "p6-responsive",
+              title: "Desktop and phone",
+              detail: "Check the public site and each dashboard at both widths.",
+            },
+            {
+              id: "p6-e2e",
+              title: "Walk the real API",
+              detail: "Customer books and pays. Technician completes the visit. Admin approves a new technician, who then resets a password and logs in.",
+            },
+          ],
+        },
+      ];
+
+      const allTasks = phases.flatMap((phase) => phase.tasks);
+      let filter = "all";
+      let state = load();
+
+      function load() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return { checked: {}, notes: {}, updatedAt: null };
+          const parsed = JSON.parse(raw);
+          return {
+            checked: parsed.checked || {},
+            notes: parsed.notes || {},
+            updatedAt: parsed.updatedAt || null,
+          };
+        } catch {
+          return { checked: {}, notes: {}, updatedAt: null };
+        }
+      }
+
+      function save() {
+        state.updatedAt = new Date().toISOString();
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({
+            version: 1,
+            checked: state.checked,
+            notes: state.notes,
+            updatedAt: state.updatedAt,
+          }),
+        );
+        renderProgress();
+      }
+
+      function render() {
+        const root = document.getElementById("phases");
+        root.innerHTML = phases
+          .map((phase) => {
+            const items = phase.tasks
+              .map((task) => {
+                const done = Boolean(state.checked[task.id]);
+                const note = state.notes[task.id] || "";
+                return `
+                  <li class="${done ? "done" : ""}" data-id="${task.id}" data-done="${done}">
+                    <label class="task">
+                      <input type="checkbox" ${done ? "checked" : ""} />
+                      <span>
+                        <span class="title">${escapeHtml(task.title)}</span>
+                        ${task.detail ? `<span class="detail">${escapeHtml(task.detail)}</span>` : ""}
+                        ${task.api ? `<span class="api">${escapeHtml(task.api)}</span>` : ""}
+                      </span>
+                    </label>
+                    <input class="note" type="text" placeholder="What I actually did" value="${escapeAttr(note)}" />
+                  </li>`;
+              })
+              .join("");
+            return `
+              <section data-phase="${phase.id}">
+                <div class="phase-head">
+                  <div>
+                    <h2>${escapeHtml(phase.title)}</h2>
+                    <p class="phase-copy">${escapeHtml(phase.summary)}</p>
+                  </div>
+                  <div>
+                    <div class="phase-pct" data-phase-pct="${phase.id}">0%</div>
+                    <div class="mini"><span data-phase-bar="${phase.id}"></span></div>
+                  </div>
+                </div>
+                <ul>${items}</ul>
+              </section>`;
+          })
+          .join("");
+
+        root.addEventListener("change", (event) => {
+          const box = event.target.closest('input[type="checkbox"]');
+          if (!box) return;
+          const item = box.closest("li");
+          state.checked[item.dataset.id] = box.checked;
+          item.dataset.done = String(box.checked);
+          item.classList.toggle("done", box.checked);
+          save();
+          applyFilter();
+        });
+
+        root.addEventListener("input", (event) => {
+          const note = event.target.closest(".note");
+          if (!note) return;
+          const item = note.closest("li");
+          const value = note.value.trim();
+          if (value) state.notes[item.dataset.id] = note.value;
+          else delete state.notes[item.dataset.id];
+          save();
+        });
+
+        renderProgress();
+        applyFilter();
+      }
+
+      function renderProgress() {
+        const done = allTasks.filter((task) => state.checked[task.id]).length;
+        const total = allTasks.length;
+        const pct = total === 0 ? 0 : Math.round((done / total) * 100);
+        document.getElementById("pct").textContent = pct + "%";
+        document.getElementById("bar").style.width = pct + "%";
+        document.getElementById("count").textContent = done + " of " + total + " tasks";
+        document.getElementById("saved").textContent = state.updatedAt
+          ? "Saved " + new Date(state.updatedAt).toLocaleString()
+          : "Not saved yet";
+
+        phases.forEach((phase) => {
+          const phaseDone = phase.tasks.filter((task) => state.checked[task.id]).length;
+          const phasePct = Math.round((phaseDone / phase.tasks.length) * 100);
+          const label = document.querySelector('[data-phase-pct="' + phase.id + '"]');
+          const bar = document.querySelector('[data-phase-bar="' + phase.id + '"]');
+          if (label) label.textContent = phaseDone + "/" + phase.tasks.length + " · " + phasePct + "%";
+          if (bar) bar.style.width = phasePct + "%";
+        });
+      }
+
+      function applyFilter() {
+        let visible = 0;
+        document.querySelectorAll("#phases li").forEach((item) => {
+          const done = item.dataset.done === "true";
+          const show = filter === "all" || (filter === "done" ? done : !done);
+          item.classList.toggle("hidden", !show);
+          if (show) visible += 1;
+        });
+        document.querySelectorAll("#phases section").forEach((section) => {
+          const any = section.querySelector("li:not(.hidden)");
+          section.style.display = any ? "" : "none";
+        });
+        document.getElementById("empty").classList.toggle("show", visible === 0);
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;");
+      }
+
+      function escapeAttr(value) {
+        return escapeHtml(value).replaceAll('"', "&quot;");
+      }
+
+      document.querySelectorAll(".filter").forEach((button) => {
+        button.addEventListener("click", () => {
+          filter = button.dataset.filter;
+          document.querySelectorAll(".filter").forEach((item) => {
+            item.setAttribute("aria-pressed", String(item === button));
+          });
+          applyFilter();
+        });
+      });
+
+      document.getElementById("clear").addEventListener("click", () => {
+        const ok = confirm("Clear every tick and note saved in this browser?");
+        if (!ok) return;
+        state = { checked: {}, notes: {}, updatedAt: null };
+        localStorage.removeItem(STORAGE_KEY);
+        render();
+      });
+
+      render();
+    </script>
+  </body>
+</html>

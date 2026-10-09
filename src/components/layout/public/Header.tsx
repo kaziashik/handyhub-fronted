@@ -1,30 +1,39 @@
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Button } from "@/components/ui/button";
+import { publicRoutes } from "@/routes";
+import Image from "next/image";
 import Link from "next/link";
 
 export default function Header() {
-  const routes = [
-    { name: "Home", url: "/" },
-    { name: "About us", url: "/about-us" },
-  ];
-
   return (
-    <header className="w-full h-16 border border-b">
-      <div className="flex justify-between items-center h-full max-w-7xl mx-auto">
-        <div>PH Healthcare</div>
-        <nav className="flex gap-5">
-          {routes.map((route) => (
+    <header className="w-full h-16 border-b">
+      <div className="flex justify-between items-center h-full max-w-7xl mx-auto px-4">
+        <Link href="/" className="flex items-center gap-2 font-medium">
+          <Image src="/logo.svg" alt="" width={28} height={28} />
+          HandyHub
+        </Link>
+        <nav className="hidden gap-5 md:flex">
+          {publicRoutes.map((route) => (
             <Link key={route.url} href={route.url}>
               {route.name}
             </Link>
           ))}
         </nav>
-        <div>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <Button
+            variant="outline"
+            render={<Link href="/apply">Apply</Link>}
+            nativeButton={false}
+          >
+            Apply
+          </Button>
           <Button
             variant="outline"
             render={<Link href="/login">Login</Link>}
             nativeButton={false}
           >
-            login
+            Login
           </Button>
         </div>
       </div>
