@@ -88,6 +88,31 @@ export type AppointmentStatus =
   | "ONGOING"
   | "COMPLETED";
 
+export type AdminAppointment = {
+  id: string;
+  status: AppointmentStatus;
+  customer: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  techinician: {
+    id: string;
+    name: string;
+    specialization: string;
+  };
+  schedule: {
+    id: string;
+    startDateTime: string;
+    endDateTime: string;
+  };
+  payment: {
+    status: string;
+    amount: string | number;
+    currency: string;
+  } | null;
+};
+
 export type TechnicianAppointment = {
   id: string;
   status: AppointmentStatus;

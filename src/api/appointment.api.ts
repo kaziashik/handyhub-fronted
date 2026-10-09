@@ -1,6 +1,7 @@
 import { api } from "@/lib/api-client";
 import type {
   ApiResponse,
+  AdminAppointment,
   AppointmentDetail,
   CustomerAppointment,
   ListQuery,
@@ -42,7 +43,7 @@ export function getTechnicianAppointments(query?: ListQuery) {
 }
 
 export function getAllAppointments(query?: ListQuery) {
-  return api<ApiResponse<unknown[]>>("/appointment/all-appointments", {
+  return api<ApiResponse<AdminAppointment[]>>("/appointment/all-appointments", {
     query,
   });
 }
