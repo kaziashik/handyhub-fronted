@@ -1,3 +1,4 @@
+import { CreateScheduleForm } from "@/components/form/create-schedule-form";
 import { PageTitle } from "@/components/modules/page-title";
 import { MySchedules } from "@/components/modules/schedules/my-schedules";
 import { Suspense } from "react";
@@ -9,6 +10,7 @@ export default function TechnicianSchedulesPage() {
         title="My schedules"
         detail="Draft and published times customers can book."
       />
+      <CreateScheduleForm />
       <Suspense
         fallback={
           <p className="text-sm text-muted-foreground">Loading schedules...</p>
