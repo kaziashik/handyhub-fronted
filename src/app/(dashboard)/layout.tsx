@@ -8,7 +8,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <DashboardGuard>
       <div className="flex min-h-screen flex-col md:flex-row">
-        <aside className="hidden w-56 shrink-0 border-r p-4 md:block">
+        <aside className="hidden w-60 shrink-0 border-r bg-muted/20 p-3 md:block">
           <Sidebar />
         </aside>
         <div className="flex min-w-0 flex-1 flex-col">
