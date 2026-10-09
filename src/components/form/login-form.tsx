@@ -9,6 +9,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Eye, EyeClosed } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FetchError } from "ofetch";
+import Link from "next/link";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
@@ -144,6 +145,11 @@ export default function LoginForm() {
           <Button type="submit" disabled={pending}>
             {pending ? "Signing in..." : "Login"}
           </Button>
+          <p className="text-center text-sm text-muted-foreground">
+            <Link href="/forgot-password" className="underline">
+              Forgot password
+            </Link>
+          </p>
         </FieldGroup>
       </form>
     </div>
