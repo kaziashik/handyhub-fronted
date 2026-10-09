@@ -203,7 +203,7 @@ export function MyAppointments() {
                       {cancelError.message}
                     </p>
                   ) : null}
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     {appointment.status === "PENDING" ? (
                       <Button
                         type="button"
@@ -232,7 +232,7 @@ export function MyAppointments() {
       )}
 
       {!appointments.isPending && !appointments.isError ? (
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <Button
             type="button"
             variant="outline"

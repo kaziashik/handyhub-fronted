@@ -78,7 +78,7 @@ export function AdminSchedules() {
   return (
     <div className="flex flex-col gap-4">
       <form className="flex flex-wrap items-end gap-3" onSubmit={handleSearch}>
-        <label className="flex flex-col gap-1 text-sm">
+        <label className="flex w-full min-w-0 max-w-sm flex-col gap-1 text-sm">
           Search
           <Input
             name="search"
@@ -151,7 +151,7 @@ export function AdminSchedules() {
       )}
 
       {!schedules.isPending && !schedules.isError ? (
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <Button
             type="button"
             variant="outline"

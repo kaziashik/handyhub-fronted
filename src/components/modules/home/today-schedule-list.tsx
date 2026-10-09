@@ -9,7 +9,6 @@ import type { TodaySchedule } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Suspense } from "react";
 
 function scheduleErrorMessage(error: unknown) {
   return apiErrorMessage(error, "Could not load today's schedules");
@@ -33,18 +32,6 @@ function formatFee(fee: TodaySchedule["techinician"]["consultationFee"]) {
 }
 
 export function TodayScheduleList() {
-  return (
-    <Suspense
-      fallback={
-        <p className="text-sm text-muted-foreground">Loading schedules...</p>
-      }
-    >
-      <TodayScheduleListContent />
-    </Suspense>
-  );
-}
-
-function TodayScheduleListContent() {
   const me = useMe();
   const role = me.data?.data?.role;
   const router = useRouter();
@@ -124,7 +111,7 @@ function TodayScheduleListContent() {
           ))}
         </ul>
       )}
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         <Button
           type="button"
           variant="outline"

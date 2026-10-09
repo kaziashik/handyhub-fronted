@@ -1,4 +1,5 @@
 import { TodayScheduleList } from "@/components/modules/home/today-schedule-list";
+import { Suspense } from "react";
 
 export function HomeSection() {
   return (
@@ -9,7 +10,13 @@ export function HomeSection() {
           Book a technician from today&apos;s published schedules.
         </p>
       </div>
-      <TodayScheduleList />
+      <Suspense
+        fallback={
+          <p className="text-sm text-muted-foreground">Loading schedules...</p>
+        }
+      >
+        <TodayScheduleList />
+      </Suspense>
     </section>
   );
 }

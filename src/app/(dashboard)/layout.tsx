@@ -1,20 +1,22 @@
 import { DashboardGuard } from "@/components/auth/dashboard-guard";
 import { AccountMenu } from "@/components/dashboard/account-menu";
+import { DashboardMenu } from "@/components/dashboard/dashboard-menu";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import type { ReactNode } from "react";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <DashboardGuard>
-      <div className="flex min-h-screen">
-        <aside className="w-56 border-r p-4">
+      <div className="flex min-h-screen flex-col md:flex-row">
+        <aside className="hidden w-56 shrink-0 border-r p-4 md:block">
           <Sidebar />
         </aside>
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="flex justify-end border-b px-6 py-3">
+          <header className="relative flex flex-wrap items-center justify-between gap-3 border-b px-4 py-3 md:justify-end md:px-6">
+            <DashboardMenu />
             <AccountMenu />
           </header>
-          <div className="flex-1 p-6">{children}</div>
+          <div className="min-w-0 flex-1 p-4 md:p-6">{children}</div>
         </div>
       </div>
     </DashboardGuard>

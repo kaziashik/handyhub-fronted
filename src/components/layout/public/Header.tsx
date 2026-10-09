@@ -1,4 +1,5 @@
 import { AccountButton } from "@/components/auth/account-button";
+import { MobileNav } from "@/components/layout/public/mobile-nav";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { publicRoutes } from "@/routes";
 import Image from "next/image";
@@ -21,7 +22,10 @@ export default function Header() {
         </nav>
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <AccountButton />
+          <div className="hidden items-center gap-2 md:flex">
+            <AccountButton />
+          </div>
+          <MobileNav />
         </div>
       </div>
     </header>

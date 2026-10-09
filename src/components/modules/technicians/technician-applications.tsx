@@ -124,7 +124,7 @@ export function TechnicianApplications() {
   return (
     <div className="flex flex-col gap-4">
       <form className="flex flex-wrap items-end gap-3" onSubmit={handleSearch}>
-        <label className="flex flex-col gap-1 text-sm">
+        <label className="flex w-full min-w-0 max-w-sm flex-col gap-1 text-sm">
           Search
           <Input
             name="search"
@@ -199,7 +199,7 @@ export function TechnicianApplications() {
                       />
                     </label>
                   ) : null}
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     <Button
                       type="button"
                       disabled={reviewingId !== null}
@@ -243,7 +243,7 @@ export function TechnicianApplications() {
       )}
 
       {!technicians.isPending && !technicians.isError ? (
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <Button
             type="button"
             variant="outline"
