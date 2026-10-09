@@ -23,6 +23,18 @@ export type AuthUser = {
   imageUrl?: string;
 };
 
+export type TechnicianAnalytics = {
+  totalSchedules: number;
+  publishedSchedules: number;
+  totalAppointments: number;
+  upcomingAppointments: number;
+  ongoingAppointments: number;
+  completedAppointments: number;
+  cancelledAppointments: number;
+  totaltechinicianEarnings: number;
+  totaltechinicianRefunded: number;
+};
+
 export type CustomerAnalytics = {
   totalAppointments: number;
   upcomingAppointments: number;
