@@ -20,6 +20,7 @@ export type AuthUser = {
   name: string;
   email: string;
   role: Role;
+  imageUrl?: string;
 };
 
 export type CustomerAnalytics = {

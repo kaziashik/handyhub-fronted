@@ -5,7 +5,7 @@ export function uploadProfileImage(file: File) {
   const body = new FormData();
   body.append("profileImage", file);
 
-  return api<ApiResponse<unknown>>("/users/profile-image", {
+  return api<ApiResponse<{ imageUrl: string }>>("/users/profile-image", {
     method: "PATCH",
     body,
   });
