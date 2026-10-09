@@ -1,6 +1,8 @@
 "use client";
 
 import { registerUser } from "@/api/auth.api";
+import { DemoLogin } from "@/components/auth/demo-login";
+import { rememberDemoAccount } from "@/lib/demo-accounts";
 import { registerSchema } from "@/validation";
 import { useForm } from "@tanstack/react-form";
 import { Eye, EyeClosed } from "lucide-react";
@@ -25,6 +27,7 @@ export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [pending, setPending] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [selectedDemo, setSelectedDemo] = useState<string | null>(null);
 
   const form = useForm({
     defaultValues: {
@@ -66,6 +69,21 @@ export default function RegisterForm() {
         <p className="text-balance text-sm text-muted-foreground">
           Register as a customer. We will email you a verification code.
         </p>
+      </div>
+
+      <DemoLogin
+        selectedId={selectedDemo}
+        onSelect={(account) => {
+          setSelectedDemo(account.id);
+          rememberDemoAccount(account.id);
+          router.push("/login");
+        }}
+      />
+
+      <div className="flex items-center gap-3 text-xs tracking-wide text-muted-foreground">
+        <span className="h-px flex-1 bg-border" />
+        OR CREATE AN ACCOUNT
+        <span className="h-px flex-1 bg-border" />
       </div>
 
       <form

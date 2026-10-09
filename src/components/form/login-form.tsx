@@ -5,13 +5,15 @@ import { getMe, googleLogin, login } from "@/api/auth.api";
 import { meQueryKey } from "@/hooks/use-me";
 import { pathAfterLogin } from "@/lib/role-redirect";
 import { loginSchema } from "@/validation";
+import { DemoLogin } from "@/components/auth/demo-login";
+import { takeDemoAccount, type DemoAccount } from "@/lib/demo-accounts";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
 import { Eye, EyeClosed } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FetchError } from "ofetch";
 import Link from "next/link";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
@@ -30,6 +32,7 @@ export default function LoginForm({ nextPath }: { nextPath?: string }) {
   const [showPassword, setShowPassword] = useState(false);
   const [pending, setPending] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [selectedDemo, setSelectedDemo] = useState<string | null>(null);
 
   const openSession = useCallback(async () => {
     const me = await queryClient.fetchQuery({
@@ -82,6 +85,19 @@ export default function LoginForm({ nextPath }: { nextPath?: string }) {
     },
   });
 
+  function fillDemoAccount(account: DemoAccount) {
+    form.setFieldValue("email", account.email);
+    form.setFieldValue("password", account.password);
+    setSelectedDemo(account.id);
+    setErrorMessage(null);
+  }
+
+  useEffect(() => {
+    const account = takeDemoAccount();
+    if (!account) return;
+    fillDemoAccount(account);
+  }, []);
+
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-col items-center gap-2 text-center">
@@ -91,6 +107,14 @@ export default function LoginForm({ nextPath }: { nextPath?: string }) {
         <p className="text-balance text-sm text-muted-foreground">
           Enter your email below to login to your account
         </p>
+      </div>
+
+      <DemoLogin selectedId={selectedDemo} onSelect={fillDemoAccount} />
+
+      <div className="flex items-center gap-3 text-xs tracking-wide text-muted-foreground">
+        <span className="h-px flex-1 bg-border" />
+        OR SIGN IN WITH EMAIL
+        <span className="h-px flex-1 bg-border" />
       </div>
 
       <form
