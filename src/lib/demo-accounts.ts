@@ -15,8 +15,8 @@ export const demoAccounts: DemoAccount[] = [
     password: "User@demo12345",
   },
   {
-    id: "doctor",
-    title: "Doctor",
+    id: "technician",
+    title: "Technician",
     detail: "Publish times and complete visits",
     email: "testertechinian@gmail.com",
     password: "Tester@techinian12345",
