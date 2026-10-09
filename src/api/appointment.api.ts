@@ -58,7 +58,7 @@ export function updateAppointmentStatus(
   body: { status: "ONGOING" | "COMPLETED" },
 ) {
   return api<ApiResponse<unknown>>(
-    `/appointment/update-status/${appointmentId}`,
+    `/appointment/update-status/${encodeURIComponent(appointmentId)}`,
     { method: "PATCH", body },
   );
 }

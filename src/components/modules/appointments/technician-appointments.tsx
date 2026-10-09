@@ -1,11 +1,15 @@
 "use client";
 
-import { getTechnicianAppointments } from "@/api/appointment.api";
+import {
+  getTechnicianAppointments,
+  updateAppointmentStatus,
+} from "@/api/appointment.api";
 import { Button } from "@/components/ui/button";
 import type { AppointmentStatus } from "@/types";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FetchError } from "ofetch";
+import { useState } from "react";
 
 const statuses: AppointmentStatus[] = [
   "PENDING",
@@ -45,12 +49,49 @@ function label(status: string) {
   return status.charAt(0) + status.slice(1).toLowerCase();
 }
 
+function nextStatus(status: AppointmentStatus) {
+  if (status === "CONFIRMED") return "ONGOING" as const;
+  if (status === "ONGOING") return "COMPLETED" as const;
+  return null;
+}
+
+function statusErrorMessage(error: unknown) {
+  if (error instanceof FetchError) {
+    const body = error.data as { message?: string } | undefined;
+    return body?.message ?? "Could not update the appointment";
+  }
+  return "Could not update the appointment";
+}
+
 export function TechnicianAppointments() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
   const page = Math.max(1, Number(searchParams.get("page") ?? "1") || 1);
   const appointmentStatus = searchParams.get("appointmentStatus") ?? "";
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [statusError, setStatusError] = useState<{
+    id: string;
+    message: string;
+  } | null>(null);
+
+  async function handleStatus(
+    appointmentId: string,
+    status: "ONGOING" | "COMPLETED",
+  ) {
+    setStatusError(null);
+    setUpdatingId(appointmentId);
+    try {
+      await updateAppointmentStatus(appointmentId, { status });
+      await queryClient.invalidateQueries({ queryKey: ["doctor-appointments"] });
+      await queryClient.invalidateQueries({ queryKey: ["technician-analytics"] });
+    } catch (error) {
+      setStatusError({ id: appointmentId, message: statusErrorMessage(error) });
+    } finally {
+      setUpdatingId(null);
+    }
+  }
 
   const appointments = useQuery({
     queryKey: ["doctor-appointments", page, appointmentStatus],
@@ -107,7 +148,9 @@ export function TechnicianAppointments() {
         <p className="text-sm text-muted-foreground">No appointments.</p>
       ) : (
         <ul className="flex flex-col gap-3">
-          {appointments.data?.data.map((appointment) => (
+          {appointments.data?.data.map((appointment) => {
+            const following = nextStatus(appointment.status);
+            return (
             <li key={appointment.id} className="rounded-lg border p-4">
               <p className="font-medium">{appointment.customer.name}</p>
               <p className="text-sm text-muted-foreground">
@@ -130,8 +173,27 @@ export function TechnicianAppointments() {
                   {appointment.payment.currency} · {label(appointment.payment.status)}
                 </p>
               ) : null}
+              {following ? (
+                <div className="mt-3 flex flex-col items-start gap-2">
+                  {statusError?.id === appointment.id ? (
+                    <p className="text-sm text-destructive">{statusError.message}</p>
+                  ) : null}
+                  <Button
+                    type="button"
+                    disabled={updatingId !== null}
+                    onClick={() => handleStatus(appointment.id, following)}
+                  >
+                    {updatingId === appointment.id
+                      ? "Updating..."
+                      : following === "ONGOING"
+                        ? "Mark ongoing"
+                        : "Mark completed"}
+                  </Button>
+                </div>
+              ) : null}
             </li>
-          ))}
+            );
+          })}
         </ul>
       )}
 
