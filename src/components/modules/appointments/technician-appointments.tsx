@@ -91,6 +91,8 @@ export function TechnicianAppointments() {
       getTechnicianAppointments({
         page,
         limit: 10,
+        sortBy: "createdAt",
+        sortOrder: "desc",
         ...(appointmentStatus ? { status: appointmentStatus } : {}),
       }),
   });

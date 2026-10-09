@@ -90,6 +90,8 @@ export function TechnicianApplications() {
       getAllTechnicians({
         page,
         limit: 10,
+        sortBy: "createdAt",
+        sortOrder: "desc",
         ...(searchTerm ? { searchTerm } : {}),
         ...(verificationStatus ? { verificationStatus } : {}),
       }),

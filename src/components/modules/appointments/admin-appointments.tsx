@@ -82,6 +82,8 @@ export function AdminAppointments() {
       getAllAppointments({
         page,
         limit: 10,
+        sortBy: "createdAt",
+        sortOrder: "desc",
         ...(appointmentStatus ? { status: appointmentStatus } : {}),
       }),
   });

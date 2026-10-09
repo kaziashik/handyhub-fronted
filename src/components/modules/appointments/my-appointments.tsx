@@ -118,6 +118,8 @@ export function MyAppointments() {
       getMyAppointments({
         page,
         limit: 10,
+        sortBy: "createdAt",
+        sortOrder: "desc",
         ...(appointmentStatus ? { status: appointmentStatus } : {}),
       }),
   });
