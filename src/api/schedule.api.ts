@@ -62,7 +62,8 @@ export function publishSchedule(scheduleId: string) {
 }
 
 export function deleteSchedule(scheduleId: string) {
-  return api<ApiResponse<unknown>>(`/schedule/${scheduleId}`, {
-    method: "DELETE",
-  });
+  return api<ApiResponse<unknown>>(
+    `/schedule/${encodeURIComponent(scheduleId)}`,
+    { method: "DELETE" },
+  );
 }

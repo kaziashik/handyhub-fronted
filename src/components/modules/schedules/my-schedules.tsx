@@ -1,6 +1,10 @@
 "use client";
 
-import { getMySchedules, publishSchedule } from "@/api/schedule.api";
+import {
+  deleteSchedule,
+  getMySchedules,
+  publishSchedule,
+} from "@/api/schedule.api";
 import { EditScheduleForm } from "@/components/form/edit-schedule-form";
 import { Button } from "@/components/ui/button";
 import type { ScheduleStatus } from "@/types";
@@ -40,6 +44,25 @@ function publishErrorMessage(error: unknown) {
   return "Could not publish the schedule";
 }
 
+function deleteErrorMessage(error: unknown) {
+  if (error instanceof FetchError) {
+    const body = error.data as { message?: string } | undefined;
+    return body?.message ?? "Could not delete the schedule";
+  }
+  return "Could not delete the schedule";
+}
+
+function canDelete(schedule: {
+  status: ScheduleStatus;
+  totalSlots: number;
+  availableSlots: number;
+}) {
+  return !(
+    schedule.status === "PUBLISHED" &&
+    schedule.availableSlots !== schedule.totalSlots
+  );
+}
+
 export function MySchedules() {
   const router = useRouter();
   const pathname = usePathname();
@@ -49,10 +72,16 @@ export function MySchedules() {
   const scheduleStatus = searchParams.get("scheduleStatus") ?? "";
   const [editingId, setEditingId] = useState<string | null>(null);
   const [publishingId, setPublishingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [publishError, setPublishError] = useState<{
     id: string;
     message: string;
   } | null>(null);
+  const [deleteError, setDeleteError] = useState<{
+    id: string;
+    message: string;
+  } | null>(null);
+  const busy = publishingId !== null || deletingId !== null;
 
   async function handlePublish(scheduleId: string) {
     setPublishError(null);
@@ -66,6 +95,21 @@ export function MySchedules() {
       setPublishError({ id: scheduleId, message: publishErrorMessage(error) });
     } finally {
       setPublishingId(null);
+    }
+  }
+
+  async function handleDelete(scheduleId: string) {
+    setDeleteError(null);
+    setDeletingId(scheduleId);
+    try {
+      await deleteSchedule(scheduleId);
+      await queryClient.invalidateQueries({ queryKey: ["my-schedules"] });
+      await queryClient.invalidateQueries({ queryKey: ["technician-analytics"] });
+      if (editingId === scheduleId) setEditingId(null);
+    } catch (error) {
+      setDeleteError({ id: scheduleId, message: deleteErrorMessage(error) });
+    } finally {
+      setDeletingId(null);
     }
   }
 
@@ -150,26 +194,41 @@ export function MySchedules() {
                   onClose={() => setEditingId(null)}
                 />
               ) : null}
-              {schedule.status === "DRAFT" && editingId !== schedule.id ? (
+              {editingId !== schedule.id && canDelete(schedule) ? (
                 <div className="mt-3 flex flex-col items-start gap-2">
                   {publishError?.id === schedule.id ? (
                     <p className="text-sm text-destructive">{publishError.message}</p>
                   ) : null}
+                  {deleteError?.id === schedule.id ? (
+                    <p className="text-sm text-destructive">{deleteError.message}</p>
+                  ) : null}
                   <div className="flex gap-2">
+                    {schedule.status === "DRAFT" ? (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        disabled={busy}
+                        onClick={() => setEditingId(schedule.id)}
+                      >
+                        Edit
+                      </Button>
+                    ) : null}
+                    {schedule.status === "DRAFT" ? (
+                      <Button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => handlePublish(schedule.id)}
+                      >
+                        {publishingId === schedule.id ? "Publishing..." : "Publish"}
+                      </Button>
+                    ) : null}
                     <Button
                       type="button"
-                      variant="outline"
-                      disabled={publishingId !== null}
-                      onClick={() => setEditingId(schedule.id)}
+                      variant="destructive"
+                      disabled={busy}
+                      onClick={() => handleDelete(schedule.id)}
                     >
-                      Edit
-                    </Button>
-                    <Button
-                      type="button"
-                      disabled={publishingId !== null}
-                      onClick={() => handlePublish(schedule.id)}
-                    >
-                      {publishingId === schedule.id ? "Publishing..." : "Publish"}
+                      {deletingId === schedule.id ? "Deleting..." : "Delete"}
                     </Button>
                   </div>
                 </div>
