@@ -43,6 +43,34 @@ export type TodaySchedule = {
   };
 };
 
+export type AppointmentStatus =
+  | "PENDING"
+  | "CONFIRMED"
+  | "CANCELLED"
+  | "ONGOING"
+  | "COMPLETED";
+
+export type CustomerAppointment = {
+  id: string;
+  status: AppointmentStatus;
+  serialNumber: number | null;
+  techinician: {
+    id: string;
+    name: string;
+    specialization: string;
+  };
+  schedule: {
+    id: string;
+    startDateTime: string;
+    endDateTime: string;
+  };
+  payment: {
+    status: string;
+    amount: string | number;
+    currency: string;
+  } | null;
+};
+
 export type ListQuery = {
   page?: number;
   limit?: number;
