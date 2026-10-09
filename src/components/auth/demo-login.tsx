@@ -10,8 +10,8 @@ export function DemoLogin({
   onSelect: (account: DemoAccount) => void;
 }) {
   return (
-    <div className="rounded-xl border bg-muted/40 p-3">
-      <p className="mb-3 text-center text-xs font-medium tracking-widest text-muted-foreground">
+    <div className="rounded-3xl border bg-muted/30 p-3">
+      <p className="mb-3 text-center text-xs font-medium tracking-[0.18em] text-muted-foreground">
         QUICK DEMO ACCESS
       </p>
       <div className="grid grid-cols-2 gap-2">
@@ -23,16 +23,12 @@ export function DemoLogin({
               type="button"
               aria-pressed={selected}
               onClick={() => onSelect(account)}
-              className={`rounded-lg border bg-background px-2 py-3 text-left transition-colors ${
+              className={`rounded-2xl border bg-background px-3 py-3 text-center transition-colors ${
                 selected ? "border-primary" : "border-border hover:bg-muted"
               }`}
             >
-              <span className="block text-sm font-semibold text-primary">
-                {account.title}
-              </span>
-              <span className="mt-1 block text-xs text-muted-foreground">
-                {account.detail}
-              </span>
+              <span className="block text-sm font-semibold text-primary">{account.title}</span>
+              <span className="mt-1 block text-xs leading-5 text-muted-foreground">{account.detail}</span>
             </button>
           );
         })}

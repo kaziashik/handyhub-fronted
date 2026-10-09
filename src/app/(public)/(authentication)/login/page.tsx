@@ -8,23 +8,12 @@ export default async function LoginPage({
 }) {
   const { next } = await searchParams;
   return (
-    <div className="grid min-h-svh lg:grid-cols-2">
-      <div className="flex flex-col gap-4 p-6 md:p-10">
-        <div className="flex justify-center gap-2 md:justify-start">
-          <BrandLink />
+    <div className="flex min-h-svh flex-col bg-muted/40 px-4 py-6">
+      <BrandLink />
+      <div className="flex flex-1 items-center justify-center py-8">
+        <div className="w-full max-w-md rounded-3xl border bg-background p-5 shadow-sm md:p-7">
+          <LoginForm nextPath={next} />
         </div>
-        <div className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-lg">
-            <LoginForm nextPath={next} />
-          </div>
-        </div>
-      </div>
-      <div className="relative hidden bg-muted lg:block">
-        <img
-          src="/login.jpg"
-          alt="Image"
-          className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-        />
       </div>
     </div>
   );

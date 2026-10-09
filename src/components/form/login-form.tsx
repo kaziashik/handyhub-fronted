@@ -9,7 +9,7 @@ import { DemoLogin } from "@/components/auth/demo-login";
 import { takeDemoAccount, type DemoAccount } from "@/lib/demo-accounts";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
-import { Eye, EyeClosed } from "lucide-react";
+import { Eye, EyeClosed, House } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FetchError } from "ofetch";
 import Link from "next/link";
@@ -101,18 +101,10 @@ export default function LoginForm({ nextPath }: { nextPath?: string }) {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-2xl font-bold tracking-tight">
-          Login to your account
-        </h1>
-        <p className="text-balance text-sm text-muted-foreground">
-          Enter your email below to login to your account
-        </p>
-      </div>
-
+      <h1 className="sr-only">Sign in</h1>
       <DemoLogin selectedId={selectedDemo} onSelect={fillDemoAccount} />
 
-      <div className="flex items-center gap-3 text-xs tracking-wide text-muted-foreground">
+      <div className="flex items-center gap-3 text-xs tracking-[0.16em] text-muted-foreground">
         <span className="h-px flex-1 bg-border" />
         OR SIGN IN WITH EMAIL
         <span className="h-px flex-1 bg-border" />
@@ -141,6 +133,7 @@ export default function LoginForm({ nextPath }: { nextPath?: string }) {
                     value={field.state.value}
                     autoComplete="off"
                     aria-invalid={isInvalid}
+                    className="h-11 rounded-full px-4"
                   />
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
                 </Field>
@@ -166,6 +159,7 @@ export default function LoginForm({ nextPath }: { nextPath?: string }) {
                       value={field.state.value}
                       autoComplete="off"
                       aria-invalid={isInvalid}
+                      className="h-11 rounded-full px-4 pr-10"
                     />
                     <button
                       className="absolute right-3 top-1/2 -translate-y-1/2"
@@ -185,26 +179,39 @@ export default function LoginForm({ nextPath }: { nextPath?: string }) {
             }}
           </form.Field>
 
-          {errorMessage ? (
-            <p className="text-sm text-destructive">{errorMessage}</p>
-          ) : null}
-          <Button type="submit" disabled={pending}>
-            {pending ? "Signing in..." : "Login"}
-          </Button>
-          <p className="text-center text-sm text-muted-foreground">
-            <Link href="/forgot-password" className="underline">
+          <p className="text-right text-sm">
+            <Link href="/forgot-password" className="text-muted-foreground hover:text-foreground">
               Forgot password
             </Link>
           </p>
+          {errorMessage ? (
+            <p className="text-sm text-destructive">{errorMessage}</p>
+          ) : null}
+          <Button type="submit" disabled={pending} className="h-11 w-full rounded-full text-base">
+            {pending ? "Signing in..." : "Sign in"}
+          </Button>
         </FieldGroup>
       </form>
 
-      <div className="flex items-center gap-3 text-xs text-muted-foreground">
+      <div className="flex items-center gap-3 text-xs tracking-[0.16em] text-muted-foreground">
         <span className="h-px flex-1 bg-border" />
-        or
+        OR CONTINUE WITH
         <span className="h-px flex-1 bg-border" />
       </div>
       <GoogleLoginButton disabled={pending} onCredential={signInWithGoogle} />
+      <p className="text-center text-sm text-muted-foreground">
+        Don&apos;t have an account?{" "}
+        <Link href="/register" className="font-medium text-primary">
+          Sign up
+        </Link>
+      </p>
+      <Link
+        href="/"
+        className="flex items-center justify-center gap-2 text-sm font-medium text-primary"
+      >
+        <House className="size-4" aria-hidden />
+        Continue browsing without signing in
+      </Link>
     </div>
   );
 }
