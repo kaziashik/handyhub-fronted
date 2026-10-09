@@ -66,8 +66,8 @@ export function SiteNav({
             href={route.url}
             aria-current={current ? "page" : undefined}
             className={cn(
-              "inline-flex items-center gap-1.5 text-sm transition duration-200",
-              stacked ? "w-full rounded-lg px-3 py-2" : "rounded-full px-3 py-1.5",
+              "inline-flex items-center gap-1.5 whitespace-nowrap text-sm transition duration-200",
+              stacked ? "w-full rounded-lg px-3 py-2" : "shrink-0 rounded-full px-2.5 py-1.5",
               current
                 ? "bg-primary/15 font-medium text-primary"
                 : "text-muted-foreground hover:bg-muted hover:text-foreground",

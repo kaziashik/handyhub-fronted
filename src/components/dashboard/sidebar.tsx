@@ -14,6 +14,7 @@ import {
   Wrench,
   type LucideIcon,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -58,9 +59,7 @@ export function Sidebar() {
         href="/"
         className="mb-3 flex items-center gap-2 rounded-lg px-2 py-1.5 font-semibold tracking-tight"
       >
-        <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-          <Wrench className="size-4" aria-hidden />
-        </span>
+        <Image src="/logo.svg" alt="" width={32} height={32} className="size-8" />
         HandyHub
       </Link>
       <SidebarLink href="/" icon={House} current={pathname === "/"}>
