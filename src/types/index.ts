@@ -75,6 +75,28 @@ export type AppointmentStatus =
   | "ONGOING"
   | "COMPLETED";
 
+export type TechnicianAppointment = {
+  id: string;
+  status: AppointmentStatus;
+  serialNumber: number | null;
+  customer: {
+    id: string;
+    name: string;
+    email: string;
+    contactNumber: string | null;
+  };
+  schedule: {
+    id: string;
+    startDateTime: string;
+    endDateTime: string;
+  };
+  payment: {
+    status: string;
+    amount: string | number;
+    currency: string;
+  } | null;
+};
+
 export type CustomerAppointment = {
   id: string;
   status: AppointmentStatus;

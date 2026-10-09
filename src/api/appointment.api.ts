@@ -4,6 +4,7 @@ import type {
   AppointmentDetail,
   CustomerAppointment,
   ListQuery,
+  TechnicianAppointment,
 } from "@/types";
 
 export function bookAppointment(body: { scheduleId: string }) {
@@ -34,9 +35,10 @@ export function getMyAppointments(query?: ListQuery) {
 }
 
 export function getTechnicianAppointments(query?: ListQuery) {
-  return api<ApiResponse<unknown[]>>("/appointment/doctor-appointments", {
-    query,
-  });
+  return api<ApiResponse<TechnicianAppointment[]>>(
+    "/appointment/doctor-appointments",
+    { query },
+  );
 }
 
 export function getAllAppointments(query?: ListQuery) {
