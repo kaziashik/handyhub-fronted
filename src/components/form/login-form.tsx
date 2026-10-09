@@ -3,7 +3,7 @@
 import { GoogleLoginButton } from "@/components/auth/google-login-button";
 import { getMe, googleLogin, login } from "@/api/auth.api";
 import { meQueryKey } from "@/hooks/use-me";
-import { dashboardPath } from "@/lib/role-redirect";
+import { pathAfterLogin } from "@/lib/role-redirect";
 import { loginSchema } from "@/validation";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
@@ -24,7 +24,7 @@ function loginErrorMessage(error: unknown) {
   return "Login failed";
 }
 
-export default function LoginForm() {
+export default function LoginForm({ nextPath }: { nextPath?: string }) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [showPassword, setShowPassword] = useState(false);
@@ -41,8 +41,8 @@ export default function LoginForm() {
       setErrorMessage("Signed in, but the profile could not be loaded.");
       return;
     }
-    router.push(dashboardPath(role));
-  }, [queryClient, router]);
+    router.push(pathAfterLogin(role, nextPath));
+  }, [nextPath, queryClient, router]);
 
   const signInWithGoogle = useCallback(
     async (idToken: string) => {

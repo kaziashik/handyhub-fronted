@@ -1,8 +1,12 @@
 "use client";
 
 import { getTodaysSchedules } from "@/api/schedule.api";
+import { Button } from "@/components/ui/button";
+import { useMe } from "@/hooks/use-me";
+import { bookEntryPath } from "@/lib/role-redirect";
 import type { TodaySchedule } from "@/types";
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { FetchError } from "ofetch";
 
 function scheduleErrorMessage(error: unknown) {
@@ -31,6 +35,8 @@ function formatFee(fee: TodaySchedule["techinician"]["consultationFee"]) {
 }
 
 export function TodayScheduleList() {
+  const me = useMe();
+  const role = me.data?.data?.role;
   const schedules = useQuery({
     queryKey: ["todays-schedules"],
     queryFn: () =>
@@ -77,6 +83,19 @@ export function TodayScheduleList() {
             {schedule.availableSlots} open{" "}
             {schedule.availableSlots === 1 ? "slot" : "slots"}
           </p>
+          <Button
+            variant="outline"
+            className="mt-3"
+            disabled={me.isPending}
+            nativeButton={me.isPending}
+            render={
+              me.isPending ? undefined : (
+                <Link href={bookEntryPath(role, schedule.id)}>Book</Link>
+              )
+            }
+          >
+            Book
+          </Button>
         </li>
       ))}
     </ul>
