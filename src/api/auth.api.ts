@@ -123,7 +123,13 @@ export function resetPassword(body: {
 }
 
 export function googleLogin(body: { idToken: string }) {
-  return api<ApiResponse<{ user: AuthUser }>>("/auth/google", {
+  return api<
+    ApiResponse<{
+      accessToken: string;
+      refreshToken: string;
+      user: AuthUser;
+    }>
+  >("/auth/google", {
     method: "POST",
     body,
   });

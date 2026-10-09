@@ -1,6 +1,7 @@
 "use client";
 
-import { getMe, login } from "@/api/auth.api";
+import { GoogleLoginButton } from "@/components/auth/google-login-button";
+import { getMe, googleLogin, login } from "@/api/auth.api";
 import { meQueryKey } from "@/hooks/use-me";
 import { dashboardPath } from "@/lib/role-redirect";
 import { loginSchema } from "@/validation";
@@ -10,7 +11,7 @@ import { Eye, EyeClosed } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FetchError } from "ofetch";
 import Link from "next/link";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Button } from "../ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
@@ -30,6 +31,35 @@ export default function LoginForm() {
   const [pending, setPending] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const openSession = useCallback(async () => {
+    const me = await queryClient.fetchQuery({
+      queryKey: meQueryKey,
+      queryFn: getMe,
+    });
+    const role = me?.data?.role;
+    if (!role) {
+      setErrorMessage("Signed in, but the profile could not be loaded.");
+      return;
+    }
+    router.push(dashboardPath(role));
+  }, [queryClient, router]);
+
+  const signInWithGoogle = useCallback(
+    async (idToken: string) => {
+      setErrorMessage(null);
+      setPending(true);
+      try {
+        await googleLogin({ idToken });
+        await openSession();
+      } catch (error) {
+        setErrorMessage(loginErrorMessage(error));
+      } finally {
+        setPending(false);
+      }
+    },
+    [openSession],
+  );
+
   const form = useForm({
     defaultValues: {
       email: "",
@@ -43,16 +73,7 @@ export default function LoginForm() {
       setPending(true);
       try {
         await login(value);
-        const me = await queryClient.fetchQuery({
-          queryKey: meQueryKey,
-          queryFn: getMe,
-        });
-        const role = me?.data?.role;
-        if (!role) {
-          setErrorMessage("Signed in, but the profile could not be loaded.");
-          return;
-        }
-        router.push(dashboardPath(role));
+        await openSession();
       } catch (error) {
         setErrorMessage(loginErrorMessage(error));
       } finally {
@@ -152,6 +173,13 @@ export default function LoginForm() {
           </p>
         </FieldGroup>
       </form>
+
+      <div className="flex items-center gap-3 text-xs text-muted-foreground">
+        <span className="h-px flex-1 bg-border" />
+        or
+        <span className="h-px flex-1 bg-border" />
+      </div>
+      <GoogleLoginButton disabled={pending} onCredential={signInWithGoogle} />
     </div>
   );
 }

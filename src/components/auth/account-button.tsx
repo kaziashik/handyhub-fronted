@@ -6,7 +6,7 @@ import { useMe } from "@/hooks/use-me";
 import Link from "next/link";
 
 export function AccountButton() {
-  const { data } = useMe();
+  const { data, isPending } = useMe();
   const user = data?.data;
 
   if (user) {
@@ -16,6 +16,10 @@ export function AccountButton() {
         <LogoutButton />
       </>
     );
+  }
+
+  if (isPending) {
+    return null;
   }
 
   return (
