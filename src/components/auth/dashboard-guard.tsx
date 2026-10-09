@@ -11,6 +11,7 @@ function rolesForPath(pathname: string): Role[] {
   if (pathname.startsWith("/admin")) return ["ADMIN"];
   if (pathname.startsWith("/technician")) return ["TECHNICIAN"];
   if (pathname.startsWith("/customer")) return ["CUSTOMER"];
+  if (pathname.startsWith("/dashboard/my-appointments")) return ["CUSTOMER"];
   return signedInRoles;
 }
 
