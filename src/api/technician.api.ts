@@ -1,5 +1,5 @@
 import { api } from "@/lib/api-client";
-import type { ApiResponse, ListQuery } from "@/types";
+import type { ApiResponse, ListQuery, TechnicianApplication } from "@/types";
 
 export function applyAsTechnician(body: FormData) {
   return api<ApiResponse<unknown>>("/techinician/apply-as-techinician", {
@@ -26,8 +26,10 @@ export function approveTechnician(body: {
   });
 }
 
-export function getAllTechnicians(query?: ListQuery) {
-  return api<ApiResponse<unknown[]>>("/techinician/all-techinician", {
+export function getAllTechnicians(
+  query?: ListQuery & { verificationStatus?: string },
+) {
+  return api<ApiResponse<TechnicianApplication[]>>("/techinician/all-techinician", {
     query,
   });
 }

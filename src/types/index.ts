@@ -156,6 +156,21 @@ export type AppointmentDetail = {
   } | null;
 };
 
+export type TechnicianVerificationStatus = "PENDING" | "APPROVED" | "REJECTED";
+
+export type TechnicianApplication = {
+  id: string;
+  name: string;
+  email: string;
+  specialization: string;
+  licenseNumber: string;
+  verificationStatus: TechnicianVerificationStatus;
+  rejectionReason: string | null;
+  user: {
+    emailVerified: boolean;
+  };
+};
+
 export type ListQuery = {
   page?: number;
   limit?: number;
