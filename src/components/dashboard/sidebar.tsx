@@ -1,5 +1,6 @@
 "use client";
 
+import { useMe } from "@/hooks/use-me";
 import {
   adminRoutes,
   customerRoutes,
@@ -10,11 +11,14 @@ import { usePathname } from "next/navigation";
 
 export function Sidebar() {
   const pathname = usePathname();
-  const links = pathname.startsWith("/admin")
-    ? adminRoutes
-    : pathname.startsWith("/technician")
-      ? technicianRoutes
-      : customerRoutes;
+  const { data } = useMe();
+  const role = data?.data?.role;
+  const links =
+    role === "ADMIN"
+      ? adminRoutes
+      : role === "TECHNICIAN"
+        ? technicianRoutes
+        : customerRoutes;
 
   return (
     <nav className="flex flex-col gap-2">

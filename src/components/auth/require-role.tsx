@@ -14,21 +14,22 @@ export function RequireRole({
   children: ReactNode;
 }) {
   const router = useRouter();
-  const { data, isLoading, isError } = useMe();
+  const { data, isPending, isError } = useMe();
   const role = data?.data?.role;
+  const allowKey = allow.join("|");
 
   useEffect(() => {
-    if (isLoading) return;
+    if (isPending) return;
     if (isError || !role) {
       router.replace("/login");
       return;
     }
-    if (!allow.includes(role)) {
+    if (!allowKey.split("|").includes(role)) {
       router.replace(dashboardPath(role));
     }
-  }, [allow, isError, isLoading, role, router]);
+  }, [allowKey, isError, isPending, role, router]);
 
-  if (isLoading || !role || !allow.includes(role)) {
+  if (isPending || !role || !allowKey.split("|").includes(role)) {
     return null;
   }
 
