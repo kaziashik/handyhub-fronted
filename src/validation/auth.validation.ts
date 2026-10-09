@@ -26,3 +26,11 @@ export const loginSchema = z.object({
   email: z.email(),
   password: passwordSchema,
 });
+
+export const verifyEmailSchema = z.object({
+  email: z.email(),
+  otp: z
+    .string()
+    .length(6, "OTP must be 6 digits")
+    .regex(/^\d+$/, "OTP must contain only numbers"),
+});
