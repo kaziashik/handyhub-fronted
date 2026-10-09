@@ -71,6 +71,35 @@ export type TodaySchedule = {
 
 export type ScheduleStatus = "DRAFT" | "PUBLISHED";
 
+export type AdminSchedule = {
+  id: string;
+  status: ScheduleStatus;
+  startDateTime: string;
+  endDateTime: string;
+  totalSlots: number;
+  availableSlots: number;
+  meetingLink: string;
+  isDeleted: boolean;
+  techinician: {
+    id: string;
+    name: string;
+    email: string;
+    specialization: string;
+  };
+};
+
+export type AdminScheduleDetail = AdminSchedule & {
+  appointments: {
+    id: string;
+    status: AppointmentStatus;
+    customer: {
+      id: string;
+      name: string;
+      email: string;
+    };
+  }[];
+};
+
 export type TechnicianSchedule = {
   id: string;
   status: ScheduleStatus;

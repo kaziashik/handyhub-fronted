@@ -1,5 +1,7 @@
 import { api } from "@/lib/api-client";
 import type {
+  AdminSchedule,
+  AdminScheduleDetail,
   ApiResponse,
   ListQuery,
   TechnicianSchedule,
@@ -24,7 +26,9 @@ export function getMySchedules(query?: ListQuery) {
 }
 
 export function getAllSchedules(query?: ListQuery) {
-  return api<ApiResponse<unknown[]>>("/schedule/all-schedules", { query });
+  return api<ApiResponse<AdminSchedule[]>>("/schedule/all-schedules", {
+    query,
+  });
 }
 
 export function getTodaysSchedules(query?: ListQuery) {
@@ -34,7 +38,9 @@ export function getTodaysSchedules(query?: ListQuery) {
 }
 
 export function getSchedule(scheduleId: string) {
-  return api<ApiResponse<unknown>>(`/schedule/${scheduleId}`);
+  return api<ApiResponse<AdminScheduleDetail>>(
+    `/schedule/${encodeURIComponent(scheduleId)}`,
+  );
 }
 
 export function updateSchedule(
