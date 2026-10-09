@@ -1,9 +1,9 @@
 "use client";
 
 import { getCustomerAnalytics } from "@/api/analytics.api";
+import { apiErrorMessage } from "@/lib/api-error";
 import type { CustomerAnalytics } from "@/types";
 import { useQuery } from "@tanstack/react-query";
-import { FetchError } from "ofetch";
 
 const stats: { key: keyof CustomerAnalytics; label: string; money?: boolean }[] =
   [
@@ -16,11 +16,7 @@ const stats: { key: keyof CustomerAnalytics; label: string; money?: boolean }[] 
   ];
 
 function analyticsErrorMessage(error: unknown) {
-  if (error instanceof FetchError) {
-    const body = error.data as { message?: string } | undefined;
-    return body?.message ?? "Could not load your overview";
-  }
-  return "Could not load your overview";
+  return apiErrorMessage(error, "Could not load your overview");
 }
 
 function formatAmount(value: number) {

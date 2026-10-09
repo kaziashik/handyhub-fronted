@@ -1,9 +1,9 @@
 "use client";
 
 import { getAdminAnalytics } from "@/api/analytics.api";
+import { apiErrorMessage } from "@/lib/api-error";
 import type { AdminAnalytics } from "@/types";
 import { useQuery } from "@tanstack/react-query";
-import { FetchError } from "ofetch";
 
 const stats: { key: keyof AdminAnalytics; label: string; money?: boolean }[] = [
   { key: "totalTechician", label: "Technicians" },
@@ -19,11 +19,7 @@ const stats: { key: keyof AdminAnalytics; label: string; money?: boolean }[] = [
 ];
 
 function analyticsErrorMessage(error: unknown) {
-  if (error instanceof FetchError) {
-    const body = error.data as { message?: string } | undefined;
-    return body?.message ?? "Could not load the overview";
-  }
-  return "Could not load the overview";
+  return apiErrorMessage(error, "Could not load the overview");
 }
 
 function formatAmount(value: number) {

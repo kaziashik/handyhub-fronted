@@ -3,21 +3,17 @@
 import { getAllSchedules } from "@/api/schedule.api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { apiErrorMessage } from "@/lib/api-error";
 import type { ScheduleStatus } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { FetchError } from "ofetch";
 import { useState, type FormEvent } from "react";
 
 const statuses: ScheduleStatus[] = ["DRAFT", "PUBLISHED"];
 
 function listErrorMessage(error: unknown) {
-  if (error instanceof FetchError) {
-    const body = error.data as { message?: string } | undefined;
-    return body?.message ?? "Could not load schedules";
-  }
-  return "Could not load schedules";
+  return apiErrorMessage(error, "Could not load schedules");
 }
 
 function formatTime(value: string) {
@@ -122,7 +118,7 @@ export function AdminSchedules() {
         <p className="text-sm text-destructive">
           {listErrorMessage(schedules.error)}
         </p>
-      ) : (schedules.data?.data.length ?? 0) === 0 ? (
+      ) : (schedules.data?.data?.length ?? 0) === 0 ? (
         <p className="text-sm text-muted-foreground">No schedules.</p>
       ) : (
         <ul className="flex flex-col gap-3">

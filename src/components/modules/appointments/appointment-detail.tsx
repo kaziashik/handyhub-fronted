@@ -1,16 +1,12 @@
 "use client";
 
 import { getAppointment } from "@/api/appointment.api";
+import { apiErrorMessage } from "@/lib/api-error";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { FetchError } from "ofetch";
 
 function detailErrorMessage(error: unknown) {
-  if (error instanceof FetchError) {
-    const body = error.data as { message?: string } | undefined;
-    return body?.message ?? "Could not load appointment";
-  }
-  return "Could not load appointment";
+  return apiErrorMessage(error, "Could not load appointment");
 }
 
 function formatTime(value: string) {

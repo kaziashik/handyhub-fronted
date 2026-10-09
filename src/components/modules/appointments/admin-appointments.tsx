@@ -2,10 +2,10 @@
 
 import { cancelAppointment, getAllAppointments } from "@/api/appointment.api";
 import { Button } from "@/components/ui/button";
+import { apiErrorMessage } from "@/lib/api-error";
 import type { AppointmentStatus } from "@/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { FetchError } from "ofetch";
 import { useState } from "react";
 
 const statuses: AppointmentStatus[] = [
@@ -17,11 +17,7 @@ const statuses: AppointmentStatus[] = [
 ];
 
 function listErrorMessage(error: unknown) {
-  if (error instanceof FetchError) {
-    const body = error.data as { message?: string } | undefined;
-    return body?.message ?? "Could not load appointments";
-  }
-  return "Could not load appointments";
+  return apiErrorMessage(error, "Could not load appointments");
 }
 
 function formatTime(value: string) {
@@ -47,11 +43,7 @@ function label(status: string) {
 }
 
 function cancelErrorMessage(error: unknown) {
-  if (error instanceof FetchError) {
-    const body = error.data as { message?: string } | undefined;
-    return body?.message ?? "Could not cancel appointment";
-  }
-  return "Could not cancel appointment";
+  return apiErrorMessage(error, "Could not cancel appointment");
 }
 
 export function AdminAppointments() {
@@ -135,7 +127,7 @@ export function AdminAppointments() {
         <p className="text-sm text-destructive">
           {listErrorMessage(appointments.error)}
         </p>
-      ) : (appointments.data?.data.length ?? 0) === 0 ? (
+      ) : (appointments.data?.data?.length ?? 0) === 0 ? (
         <p className="text-sm text-muted-foreground">No appointments.</p>
       ) : (
         <ul className="flex flex-col gap-3">

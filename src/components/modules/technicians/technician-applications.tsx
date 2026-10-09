@@ -3,10 +3,10 @@
 import { approveTechnician, getAllTechnicians } from "@/api/technician.api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { apiErrorMessage } from "@/lib/api-error";
 import type { TechnicianVerificationStatus } from "@/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { FetchError } from "ofetch";
 import { useState, type FormEvent } from "react";
 
 const statuses: TechnicianVerificationStatus[] = [
@@ -16,11 +16,7 @@ const statuses: TechnicianVerificationStatus[] = [
 ];
 
 function listErrorMessage(error: unknown) {
-  if (error instanceof FetchError) {
-    const body = error.data as { message?: string } | undefined;
-    return body?.message ?? "Could not load technicians";
-  }
-  return "Could not load technicians";
+  return apiErrorMessage(error, "Could not load technicians");
 }
 
 function label(status: string) {
@@ -28,11 +24,7 @@ function label(status: string) {
 }
 
 function reviewErrorMessage(error: unknown) {
-  if (error instanceof FetchError) {
-    const body = error.data as { message?: string } | undefined;
-    return body?.message ?? "Could not review the application";
-  }
-  return "Could not review the application";
+  return apiErrorMessage(error, "Could not review the application");
 }
 
 export function TechnicianApplications() {
@@ -170,7 +162,7 @@ export function TechnicianApplications() {
         <p className="text-sm text-destructive">
           {listErrorMessage(technicians.error)}
         </p>
-      ) : (technicians.data?.data.length ?? 0) === 0 ? (
+      ) : (technicians.data?.data?.length ?? 0) === 0 ? (
         <p className="text-sm text-muted-foreground">No technicians.</p>
       ) : (
         <ul className="flex flex-col gap-3">

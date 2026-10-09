@@ -7,20 +7,16 @@ import {
 } from "@/api/schedule.api";
 import { EditScheduleForm } from "@/components/form/edit-schedule-form";
 import { Button } from "@/components/ui/button";
+import { apiErrorMessage } from "@/lib/api-error";
 import type { ScheduleStatus } from "@/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { FetchError } from "ofetch";
 import { useState } from "react";
 
 const statuses: ScheduleStatus[] = ["DRAFT", "PUBLISHED"];
 
 function listErrorMessage(error: unknown) {
-  if (error instanceof FetchError) {
-    const body = error.data as { message?: string } | undefined;
-    return body?.message ?? "Could not load schedules";
-  }
-  return "Could not load schedules";
+  return apiErrorMessage(error, "Could not load schedules");
 }
 
 function formatTime(value: string) {
@@ -37,19 +33,11 @@ function label(status: string) {
 }
 
 function publishErrorMessage(error: unknown) {
-  if (error instanceof FetchError) {
-    const body = error.data as { message?: string } | undefined;
-    return body?.message ?? "Could not publish the schedule";
-  }
-  return "Could not publish the schedule";
+  return apiErrorMessage(error, "Could not publish the schedule");
 }
 
 function deleteErrorMessage(error: unknown) {
-  if (error instanceof FetchError) {
-    const body = error.data as { message?: string } | undefined;
-    return body?.message ?? "Could not delete the schedule";
-  }
-  return "Could not delete the schedule";
+  return apiErrorMessage(error, "Could not delete the schedule");
 }
 
 function canDelete(schedule: {
@@ -166,7 +154,7 @@ export function MySchedules() {
         <p className="text-sm text-destructive">
           {listErrorMessage(schedules.error)}
         </p>
-      ) : (schedules.data?.data.length ?? 0) === 0 ? (
+      ) : (schedules.data?.data?.length ?? 0) === 0 ? (
         <p className="text-sm text-muted-foreground">No schedules.</p>
       ) : (
         <ul className="flex flex-col gap-3">

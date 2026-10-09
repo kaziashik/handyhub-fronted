@@ -1,16 +1,12 @@
 "use client";
 
 import { getSchedule } from "@/api/schedule.api";
+import { apiErrorMessage } from "@/lib/api-error";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { FetchError } from "ofetch";
 
 function detailErrorMessage(error: unknown) {
-  if (error instanceof FetchError) {
-    const body = error.data as { message?: string } | undefined;
-    return body?.message ?? "Could not load the schedule";
-  }
-  return "Could not load the schedule";
+  return apiErrorMessage(error, "Could not load the schedule");
 }
 
 function formatTime(value: string) {

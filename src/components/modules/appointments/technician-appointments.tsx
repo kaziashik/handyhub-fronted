@@ -5,10 +5,10 @@ import {
   updateAppointmentStatus,
 } from "@/api/appointment.api";
 import { Button } from "@/components/ui/button";
+import { apiErrorMessage } from "@/lib/api-error";
 import type { AppointmentStatus } from "@/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { FetchError } from "ofetch";
 import { useState } from "react";
 
 const statuses: AppointmentStatus[] = [
@@ -20,11 +20,7 @@ const statuses: AppointmentStatus[] = [
 ];
 
 function listErrorMessage(error: unknown) {
-  if (error instanceof FetchError) {
-    const body = error.data as { message?: string } | undefined;
-    return body?.message ?? "Could not load appointments";
-  }
-  return "Could not load appointments";
+  return apiErrorMessage(error, "Could not load appointments");
 }
 
 function formatTime(value: string) {
@@ -56,11 +52,7 @@ function nextStatus(status: AppointmentStatus) {
 }
 
 function statusErrorMessage(error: unknown) {
-  if (error instanceof FetchError) {
-    const body = error.data as { message?: string } | undefined;
-    return body?.message ?? "Could not update the appointment";
-  }
-  return "Could not update the appointment";
+  return apiErrorMessage(error, "Could not update the appointment");
 }
 
 export function TechnicianAppointments() {
@@ -144,7 +136,7 @@ export function TechnicianAppointments() {
         <p className="text-sm text-destructive">
           {listErrorMessage(appointments.error)}
         </p>
-      ) : (appointments.data?.data.length ?? 0) === 0 ? (
+      ) : (appointments.data?.data?.length ?? 0) === 0 ? (
         <p className="text-sm text-muted-foreground">No appointments.</p>
       ) : (
         <ul className="flex flex-col gap-3">

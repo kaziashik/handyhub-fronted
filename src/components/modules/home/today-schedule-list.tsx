@@ -3,18 +3,14 @@
 import { getTodaysSchedules } from "@/api/schedule.api";
 import { Button } from "@/components/ui/button";
 import { useMe } from "@/hooks/use-me";
+import { apiErrorMessage } from "@/lib/api-error";
 import { bookEntryPath } from "@/lib/role-redirect";
 import type { TodaySchedule } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { FetchError } from "ofetch";
 
 function scheduleErrorMessage(error: unknown) {
-  if (error instanceof FetchError) {
-    const body = error.data as { message?: string } | undefined;
-    return body?.message ?? "Could not load today's schedules";
-  }
-  return "Could not load today's schedules";
+  return apiErrorMessage(error, "Could not load today's schedules");
 }
 
 function formatTime(value: string) {
