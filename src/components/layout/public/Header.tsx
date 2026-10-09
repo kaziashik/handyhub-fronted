@@ -1,5 +1,5 @@
+import { AccountButton } from "@/components/auth/account-button";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { Button } from "@/components/ui/button";
 import { publicRoutes } from "@/routes";
 import Image from "next/image";
 import Link from "next/link";
@@ -21,20 +21,7 @@ export default function Header() {
         </nav>
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <Button
-            variant="outline"
-            render={<Link href="/apply">Apply</Link>}
-            nativeButton={false}
-          >
-            Apply
-          </Button>
-          <Button
-            variant="outline"
-            render={<Link href="/login">Login</Link>}
-            nativeButton={false}
-          >
-            Login
-          </Button>
+          <AccountButton />
         </div>
       </div>
     </header>

@@ -1,5 +1,6 @@
 import { api } from "@/lib/api-client";
 import type { ApiResponse, AuthUser } from "@/types";
+import { FetchError } from "ofetch";
 
 export function registerUser(body: {
   name: string;
@@ -25,8 +26,15 @@ export function login(body: { email: string; password: string }) {
   );
 }
 
-export function getMe() {
-  return api<ApiResponse<AuthUser>>("/auth/me");
+export async function getMe() {
+  try {
+    return await api<ApiResponse<AuthUser>>("/auth/me");
+  } catch (error) {
+    if (error instanceof FetchError && error.statusCode) {
+      return null;
+    }
+    throw error;
+  }
 }
 
 export function refreshToken() {
