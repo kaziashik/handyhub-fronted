@@ -22,5 +22,7 @@ export const technicianRoutes = [
 
 export const adminRoutes = [
   { name: "Overview", url: "/admin" },
-  { name: "Password", url: "/change-password" },
+  { name: "Technicians", url: "/admin/technicians" },
+  { name: "Appointments", url: "/admin/appointments" },
+  { name: "Schedules", url: "/admin/schedules" },
 ];
