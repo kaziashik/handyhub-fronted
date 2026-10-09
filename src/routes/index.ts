@@ -8,7 +8,9 @@ export const publicRoutes = [
 
 export const customerRoutes = [
   { name: "Overview", url: "/customer" },
-  { name: "Password", url: "/change-password" },
+  { name: "Schedules", url: "/customer/schedules" },
+  { name: "Appointments", url: "/customer/appointments" },
+  { name: "Profile", url: "/customer/profile" },
 ];
 
 export const technicianRoutes = [

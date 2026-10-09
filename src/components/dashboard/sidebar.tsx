@@ -9,6 +9,13 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+function linkIsCurrent(pathname: string, url: string) {
+  if (url === "/customer" || url === "/technician" || url === "/admin") {
+    return pathname === url;
+  }
+  return pathname === url || pathname.startsWith(`${url}/`);
+}
+
 export function Sidebar() {
   const pathname = usePathname();
   const { data } = useMe();
@@ -26,7 +33,7 @@ export function Sidebar() {
         <Link
           key={link.url}
           href={link.url}
-          className={pathname === link.url ? "font-semibold" : undefined}
+          className={linkIsCurrent(pathname, link.url) ? "font-semibold" : undefined}
         >
           {link.name}
         </Link>
