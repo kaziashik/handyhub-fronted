@@ -20,14 +20,15 @@ export function AccountButton() {
   return (
     <>
       <Button
-        variant="outline"
+        variant="ghost"
+        size="sm"
         render={<Link href="/apply">Apply</Link>}
         nativeButton={false}
       >
         Apply
       </Button>
       <Button
-        variant="outline"
+        size="sm"
         render={<Link href="/login">Login</Link>}
         nativeButton={false}
       >

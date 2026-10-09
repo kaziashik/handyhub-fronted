@@ -3,8 +3,28 @@
 import { useMe } from "@/hooks/use-me";
 import { dashboardPath } from "@/lib/role-redirect";
 import { publicRoutes } from "@/routes";
+import { cn } from "cn";
+import {
+  CircleHelp,
+  House,
+  Info,
+  LayoutDashboard,
+  Mail,
+  Newspaper,
+  Wrench,
+  type LucideIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+
+const linkIcons: Record<string, LucideIcon> = {
+  "/": House,
+  "/technicians": Wrench,
+  "/about-us": Info,
+  "/help": CircleHelp,
+  "/contact": Mail,
+  "/blog": Newspaper,
+};
 
 export function useSiteLinks() {
   const { data } = useMe();
@@ -22,7 +42,13 @@ export function useSiteLinks() {
   ];
 }
 
-export function SiteNav({ className }: { className?: string }) {
+export function SiteNav({
+  className,
+  stacked = false,
+}: {
+  className?: string;
+  stacked?: boolean;
+}) {
   const pathname = usePathname();
   const links = useSiteLinks();
 
@@ -33,12 +59,21 @@ export function SiteNav({ className }: { className?: string }) {
           route.url === "/"
             ? pathname === "/"
             : pathname === route.url || pathname.startsWith(`${route.url}/`);
+        const Icon = linkIcons[route.url] ?? LayoutDashboard;
         return (
           <Link
             key={route.url}
             href={route.url}
-            className={current ? "font-semibold text-primary" : undefined}
+            aria-current={current ? "page" : undefined}
+            className={cn(
+              "inline-flex items-center gap-1.5 text-sm transition duration-200",
+              stacked ? "w-full rounded-lg px-3 py-2" : "rounded-full px-3 py-1.5",
+              current
+                ? "bg-primary/15 font-medium text-primary"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground",
+            )}
           >
+            <Icon className="size-4 shrink-0" aria-hidden />
             {route.name}
           </Link>
         );

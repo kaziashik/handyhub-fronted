@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { serviceCatalog, serviceHref } from "@/content/services";
 import {
   BadgeCheck,
   CalendarCheck,
@@ -44,13 +45,6 @@ const steps = [
     title: "Follow the visit",
     text: "The appointment stays in your dashboard until it is completed or cancelled.",
   },
-];
-
-const trades = [
-  { title: "Electrical", image: "/images/electrical.jpg" },
-  { title: "Plumbing", image: "/images/plumbing.jpg" },
-  { title: "House cleaning", image: "/images/cleaning.jpg" },
-  { title: "Appliance repair", image: "/images/appliance.jpg" },
 ];
 
 export default function AboutPage() {
@@ -130,14 +124,14 @@ export default function AboutPage() {
             Trades on HandyHub
           </h2>
           <p className="text-sm text-muted-foreground">
-            Technicians list a specialization such as electrical, plumbing, house cleaning, or appliance repair.
+            Technicians list a specialization such as electrical, plumbing, cleaning, or appliance repair.
           </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {trades.map((trade) => (
+          {serviceCatalog.map((trade) => (
             <Link
               key={trade.title}
-              href={`/technicians?specialization=${encodeURIComponent(trade.title === "House cleaning" ? "Cleaning" : trade.title)}`}
+              href={serviceHref(trade.specialization)}
               className="group overflow-hidden rounded-xl border transition duration-300 hover:-translate-y-1 hover:shadow-md"
             >
               <img

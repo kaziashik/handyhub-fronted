@@ -1,15 +1,14 @@
 "use client";
 
 import { AccountButton } from "@/components/auth/account-button";
-import { useSiteLinks } from "@/components/layout/public/site-nav";
+import { SiteNav } from "@/components/layout/public/site-nav";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { Menu, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export function MobileNav() {
   const pathname = usePathname();
-  const links = useSiteLinks();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -20,24 +19,21 @@ export function MobileNav() {
     <div className="md:hidden">
       <Button
         type="button"
-        variant="outline"
-        size="sm"
+        variant="ghost"
+        size="icon"
         aria-expanded={open}
+        aria-label={open ? "Close menu" : "Open menu"}
         onClick={() => setOpen((value) => !value)}
       >
-        {open ? "Close" : "Menu"}
+        {open ? <X /> : <Menu />}
       </Button>
       {open ? (
-        <nav className="fixed inset-x-0 top-16 z-30 flex flex-col gap-3 border-b bg-background px-4 py-4">
-          {links.map((route) => (
-            <Link key={route.url} href={route.url}>
-              {route.name}
-            </Link>
-          ))}
-          <div className="flex flex-wrap gap-2">
+        <div className="fixed inset-x-0 top-16 z-30 border-b bg-background/95 px-3 py-3 shadow-lg backdrop-blur-md">
+          <SiteNav stacked className="flex flex-col gap-1" />
+          <div className="mt-3 flex flex-wrap gap-2 border-t px-1 pt-3">
             <AccountButton />
           </div>
-        </nav>
+        </div>
       ) : null}
     </div>
   );

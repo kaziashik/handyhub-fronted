@@ -1,6 +1,7 @@
 "use client";
 
 import { applyAsTechnician } from "@/api/technician.api";
+import { serviceCatalog } from "@/content/services";
 import { applyTechnicianSchema } from "@/validation";
 import { useForm } from "@tanstack/react-form";
 import {
@@ -25,13 +26,7 @@ import { Button } from "../ui/button";
 import { Field, FieldError, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 
-const specialties = [
-  "Electrical",
-  "Plumbing",
-  "House cleaning",
-  "Appliance repair",
-  "General",
-];
+const specialties = serviceCatalog.map((service) => service.specialization);
 
 type ApplyValues = {
   name: string;

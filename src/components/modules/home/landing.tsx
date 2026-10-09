@@ -3,21 +3,31 @@
 import { getPublicOverview } from "@/api/analytics.api";
 import { Button } from "@/components/ui/button";
 import { guides } from "@/content/guides";
+import { serviceCatalog, serviceHref } from "@/content/services";
 import { apiErrorMessage } from "@/lib/api-error";
 import { useQuery } from "@tanstack/react-query";
 import {
   BadgeCheck,
   CalendarCheck,
+  AirVent,
+  Bug,
   ChevronDown,
   ClipboardList,
   Droplets,
+  Flame,
+  Flower2,
+  Hammer,
+  KeyRound,
+  Paintbrush,
   Refrigerator,
   Sparkles,
+  Truck,
   UserRound,
   Users,
   Wallet,
   Wrench,
   Zap,
+  type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
@@ -37,43 +47,26 @@ const slides = [
   },
 ];
 
-const services = [
-  {
-    title: "Electrical",
-    detail: "Wiring, lighting, and breaker visits from approved electricians.",
-    href: "/technicians?specialization=Electrical",
-    image: "/images/electrical.jpg",
-    icon: Zap,
-  },
-  {
-    title: "Plumbing",
-    detail: "Leak, fixture, and pipe visits from approved plumbers.",
-    href: "/technicians?specialization=Plumbing",
-    image: "/images/plumbing.jpg",
-    icon: Droplets,
-  },
-  {
-    title: "Appliance repair",
-    detail: "Home appliance visits with a published fee and time.",
-    href: "/technicians?specialization=Appliance",
-    image: "/images/appliance.jpg",
-    icon: Refrigerator,
-  },
-  {
-    title: "House cleaning",
-    detail: "Home cleaning visits from an approved cleaner, with a published fee and time.",
-    href: "/technicians?specialization=Cleaning",
-    image: "/images/cleaning.jpg",
-    icon: Sparkles,
-  },
-  {
-    title: "General",
-    detail: "General repair visits when the technician lists that specialty.",
-    href: "/technicians?specialization=General",
-    image: "/images/general.jpg",
-    icon: Wrench,
-  },
-];
+const serviceIcons: Record<string, LucideIcon> = {
+  "Air conditioning": AirVent,
+  Electrical: Zap,
+  Plumbing: Droplets,
+  Handyman: Hammer,
+  "Home cleaning": Sparkles,
+  Painting: Paintbrush,
+  Locksmith: KeyRound,
+  "Pest control": Bug,
+  "Water heater": Flame,
+  Appliance: Refrigerator,
+  Gardening: Flower2,
+  Moving: Truck,
+};
+
+const services = serviceCatalog.map((service) => ({
+  ...service,
+  href: serviceHref(service.specialization),
+  icon: serviceIcons[service.specialization] ?? Wrench,
+}));
 
 const steps = [
   {
@@ -190,7 +183,14 @@ export function Landing({ schedules }: { schedules: ReactNode }) {
       </section>
 
       <section className="border-y bg-muted/40">
-        <div className="mx-auto grid w-full max-w-7xl gap-4 px-4 py-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-12">
+          <div className="flex flex-col gap-2">
+            <h2 className="text-2xl font-semibold">Services</h2>
+            <p className="text-sm text-muted-foreground">
+              Browse technicians by the specialty they list.
+            </p>
+          </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {services.map((service) => (
             <Link
               key={service.title}
@@ -211,6 +211,7 @@ export function Landing({ schedules }: { schedules: ReactNode }) {
               </div>
             </Link>
           ))}
+        </div>
         </div>
       </section>
 
