@@ -15,7 +15,9 @@ export const customerRoutes = [
 
 export const technicianRoutes = [
   { name: "Overview", url: "/technician" },
-  { name: "Password", url: "/change-password" },
+  { name: "My schedules", url: "/technician/schedules" },
+  { name: "Appointments", url: "/technician/appointments" },
+  { name: "Profile", url: "/technician/profile" },
 ];
 
 export const adminRoutes = [
