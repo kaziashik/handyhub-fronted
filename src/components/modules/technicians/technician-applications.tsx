@@ -1,10 +1,10 @@
 "use client";
 
-import { getAllTechnicians } from "@/api/technician.api";
+import { approveTechnician, getAllTechnicians } from "@/api/technician.api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { TechnicianVerificationStatus } from "@/types";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FetchError } from "ofetch";
 import { useState, type FormEvent } from "react";
@@ -27,14 +27,70 @@ function label(status: string) {
   return status.charAt(0) + status.slice(1).toLowerCase();
 }
 
+function reviewErrorMessage(error: unknown) {
+  if (error instanceof FetchError) {
+    const body = error.data as { message?: string } | undefined;
+    return body?.message ?? "Could not review the application";
+  }
+  return "Could not review the application";
+}
+
 export function TechnicianApplications() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
   const page = Math.max(1, Number(searchParams.get("page") ?? "1") || 1);
   const searchTerm = searchParams.get("search") ?? "";
   const verificationStatus = searchParams.get("verificationStatus") ?? "";
   const [searchInput, setSearchInput] = useState(searchTerm);
+  const [reviewingId, setReviewingId] = useState<string | null>(null);
+  const [reviewAction, setReviewAction] = useState<"APPROVED" | "REJECTED" | null>(
+    null,
+  );
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [reason, setReason] = useState("");
+  const [reviewError, setReviewError] = useState<{
+    id: string;
+    message: string;
+  } | null>(null);
+
+  async function handleReview(
+    techinicianId: string,
+    status: "APPROVED" | "REJECTED",
+  ) {
+    const rejectionReason = reason.trim();
+    setReviewError(null);
+    if (status === "REJECTED" && !rejectionReason) {
+      setReviewError({
+        id: techinicianId,
+        message: "Rejection reason is required.",
+      });
+      return;
+    }
+
+    setReviewingId(techinicianId);
+    setReviewAction(status);
+    try {
+      await approveTechnician({
+        techinicianId,
+        verificationStatus: status,
+        ...(status === "REJECTED" ? { rejectionReason } : {}),
+      });
+      await queryClient.invalidateQueries({ queryKey: ["all-technicians"] });
+      await queryClient.invalidateQueries({ queryKey: ["admin-analytics"] });
+      setRejectingId(null);
+      setReason("");
+    } catch (error) {
+      setReviewError({
+        id: techinicianId,
+        message: reviewErrorMessage(error),
+      });
+    } finally {
+      setReviewingId(null);
+      setReviewAction(null);
+    }
+  }
 
   const technicians = useQuery({
     queryKey: ["all-technicians", page, searchTerm, verificationStatus],
@@ -132,6 +188,60 @@ export function TechnicianApplications() {
               </p>
               {technician.rejectionReason ? (
                 <p className="text-sm">{technician.rejectionReason}</p>
+              ) : null}
+              {technician.verificationStatus === "PENDING" &&
+              technician.user.emailVerified ? (
+                <div className="mt-3 flex flex-col items-start gap-2">
+                  {reviewError?.id === technician.id ? (
+                    <p className="text-sm text-destructive">{reviewError.message}</p>
+                  ) : null}
+                  {rejectingId === technician.id ? (
+                    <label className="flex w-full max-w-sm flex-col gap-1 text-sm">
+                      Rejection reason
+                      <Input
+                        value={reason}
+                        onChange={(event) => setReason(event.target.value)}
+                        disabled={reviewingId !== null}
+                      />
+                    </label>
+                  ) : null}
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      disabled={reviewingId !== null}
+                      onClick={() => handleReview(technician.id, "APPROVED")}
+                    >
+                      {reviewingId === technician.id && reviewAction === "APPROVED"
+                        ? "Approving..."
+                        : "Approve"}
+                    </Button>
+                    {rejectingId === technician.id ? (
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        disabled={reviewingId !== null}
+                        onClick={() => handleReview(technician.id, "REJECTED")}
+                      >
+                        {reviewingId === technician.id && reviewAction === "REJECTED"
+                          ? "Rejecting..."
+                          : "Reject"}
+                      </Button>
+                    ) : (
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        disabled={reviewingId !== null}
+                        onClick={() => {
+                          setRejectingId(technician.id);
+                          setReason("");
+                          setReviewError(null);
+                        }}
+                      >
+                        Reject
+                      </Button>
+                    )}
+                  </div>
+                </div>
               ) : null}
             </li>
           ))}
