@@ -1,10 +1,10 @@
 "use client";
 
-import { getMySchedules } from "@/api/schedule.api";
+import { getMySchedules, publishSchedule } from "@/api/schedule.api";
 import { EditScheduleForm } from "@/components/form/edit-schedule-form";
 import { Button } from "@/components/ui/button";
 import type { ScheduleStatus } from "@/types";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FetchError } from "ofetch";
 import { useState } from "react";
@@ -32,13 +32,42 @@ function label(status: string) {
   return status.charAt(0) + status.slice(1).toLowerCase();
 }
 
+function publishErrorMessage(error: unknown) {
+  if (error instanceof FetchError) {
+    const body = error.data as { message?: string } | undefined;
+    return body?.message ?? "Could not publish the schedule";
+  }
+  return "Could not publish the schedule";
+}
+
 export function MySchedules() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
   const page = Math.max(1, Number(searchParams.get("page") ?? "1") || 1);
   const scheduleStatus = searchParams.get("scheduleStatus") ?? "";
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [publishingId, setPublishingId] = useState<string | null>(null);
+  const [publishError, setPublishError] = useState<{
+    id: string;
+    message: string;
+  } | null>(null);
+
+  async function handlePublish(scheduleId: string) {
+    setPublishError(null);
+    setPublishingId(scheduleId);
+    try {
+      await publishSchedule(scheduleId);
+      await queryClient.invalidateQueries({ queryKey: ["my-schedules"] });
+      await queryClient.invalidateQueries({ queryKey: ["technician-analytics"] });
+      if (editingId === scheduleId) setEditingId(null);
+    } catch (error) {
+      setPublishError({ id: scheduleId, message: publishErrorMessage(error) });
+    } finally {
+      setPublishingId(null);
+    }
+  }
 
   const schedules = useQuery({
     queryKey: ["my-schedules", page, scheduleStatus],
@@ -115,22 +144,35 @@ export function MySchedules() {
                   Meeting link
                 </a>
               ) : null}
-              {schedule.status === "DRAFT" ? (
-                editingId === schedule.id ? (
-                  <EditScheduleForm
-                    schedule={schedule}
-                    onClose={() => setEditingId(null)}
-                  />
-                ) : (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="mt-3"
-                    onClick={() => setEditingId(schedule.id)}
-                  >
-                    Edit
-                  </Button>
-                )
+              {schedule.status === "DRAFT" && editingId === schedule.id ? (
+                <EditScheduleForm
+                  schedule={schedule}
+                  onClose={() => setEditingId(null)}
+                />
+              ) : null}
+              {schedule.status === "DRAFT" && editingId !== schedule.id ? (
+                <div className="mt-3 flex flex-col items-start gap-2">
+                  {publishError?.id === schedule.id ? (
+                    <p className="text-sm text-destructive">{publishError.message}</p>
+                  ) : null}
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={publishingId !== null}
+                      onClick={() => setEditingId(schedule.id)}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      type="button"
+                      disabled={publishingId !== null}
+                      onClick={() => handlePublish(schedule.id)}
+                    >
+                      {publishingId === schedule.id ? "Publishing..." : "Publish"}
+                    </Button>
+                  </div>
+                </div>
               ) : null}
             </li>
           ))}

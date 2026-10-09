@@ -55,9 +55,10 @@ export function updateSchedule(
 }
 
 export function publishSchedule(scheduleId: string) {
-  return api<ApiResponse<unknown>>(`/schedule/publish-schedule/${scheduleId}`, {
-    method: "PATCH",
-  });
+  return api<ApiResponse<unknown>>(
+    `/schedule/publish-schedule/${encodeURIComponent(scheduleId)}`,
+    { method: "PATCH" },
+  );
 }
 
 export function deleteSchedule(scheduleId: string) {
