@@ -6,6 +6,12 @@ export function dashboardPath(role: Role) {
   return "/customer";
 }
 
+export function profilePath(role: Role) {
+  if (role === "ADMIN") return "/admin/settings";
+  if (role === "TECHNICIAN") return "/technician/profile";
+  return "/customer/profile";
+}
+
 export function bookPath(scheduleId: string) {
   return `/customer/book?scheduleId=${encodeURIComponent(scheduleId)}`;
 }

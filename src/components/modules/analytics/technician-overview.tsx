@@ -1,6 +1,7 @@
 "use client";
 
 import { getTechnicianAnalytics } from "@/api/analytics.api";
+import { OverviewChart } from "@/components/dashboard/overview-chart";
 import { apiErrorMessage } from "@/lib/api-error";
 import type { TechnicianAnalytics } from "@/types";
 import { useQuery } from "@tanstack/react-query";
@@ -50,6 +51,7 @@ export function TechnicianOverview() {
   const data = analytics.data?.data;
 
   return (
+    <div className="flex flex-col gap-4">
     <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {stats.map((stat) => (
         <li key={stat.key} className="rounded-lg border p-4">
@@ -60,5 +62,12 @@ export function TechnicianOverview() {
         </li>
       ))}
     </ul>
+    <OverviewChart
+      items={stats.map((stat) => ({
+        label: stat.label,
+        value: Number(data?.[stat.key] ?? 0),
+      }))}
+    />
+    </div>
   );
 }

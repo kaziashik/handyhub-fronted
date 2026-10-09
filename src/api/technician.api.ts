@@ -1,5 +1,10 @@
 import { api } from "@/lib/api-client";
-import type { ApiResponse, ListQuery, TechnicianApplication } from "@/types";
+import type {
+  ApiResponse,
+  ListQuery,
+  PublicTechnician,
+  TechnicianApplication,
+} from "@/types";
 
 export function applyAsTechnician(body: FormData) {
   return api<ApiResponse<unknown>>("/techinician/apply-as-techinician", {
@@ -24,6 +29,23 @@ export function approveTechnician(body: {
     method: "POST",
     body,
   });
+}
+
+export function getPublicTechnicians(
+  query?: ListQuery & {
+    searchTerm?: string;
+    specialization?: string;
+    minExperience?: string;
+    maxFee?: string;
+  },
+) {
+  return api<ApiResponse<PublicTechnician[]>>("/techinician/public", { query });
+}
+
+export function getPublicTechnician(techinicianId: string) {
+  return api<
+    ApiResponse<{ technician: PublicTechnician; related: PublicTechnician[] }>
+  >(`/techinician/public/${techinicianId}`);
 }
 
 export function getAllTechnicians(

@@ -3,6 +3,7 @@ import type {
   AdminAnalytics,
   ApiResponse,
   CustomerAnalytics,
+  PublicOverview,
   TechnicianAnalytics,
 } from "@/types";
 
@@ -12,6 +13,10 @@ export function getCustomerAnalytics() {
 
 export function getTechnicianAnalytics() {
   return api<ApiResponse<TechnicianAnalytics>>("/analytics/techician-analytics");
+}
+
+export function getPublicOverview() {
+  return api<ApiResponse<PublicOverview>>("/analytics/public-overview");
 }
 
 export function getAdminAnalytics() {

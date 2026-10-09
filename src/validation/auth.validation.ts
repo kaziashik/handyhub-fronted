@@ -19,7 +19,7 @@ export const registerSchema = z.object({
     .max(100, "Name must be at most 100 characters"),
   email: z.email(),
   password: passwordSchema,
-  phone: z.string().trim().optional(),
+  phone: z.string().trim(),
 });
 
 export const loginSchema = z.object({

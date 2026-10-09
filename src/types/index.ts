@@ -19,6 +19,7 @@ export type AuthUser = {
   userId?: string;
   name: string;
   email: string;
+  phone?: string | null;
   role: Role;
   imageUrl?: string;
 };
@@ -66,7 +67,38 @@ export type TodaySchedule = {
     id: string;
     name: string;
     consultationFee: string | number | null;
+    specialization?: string;
+    bio?: string | null;
+    user?: { imageUrl: string };
   };
+};
+
+export type PublicTechnician = {
+  id: string;
+  name: string;
+  specialization: string;
+  qualifications: string;
+  experienceYears: number;
+  bio: string | null;
+  consultationFee: string | number | null;
+  address: string | null;
+  user: { imageUrl: string };
+};
+
+export type PublicOverview = {
+  approvedTechnicians: number;
+  customers: number;
+  appointments: number;
+  publishedSchedules: number;
+};
+
+export type CustomerAccount = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  status: string;
+  createdAt: string;
 };
 
 export type ScheduleStatus = "DRAFT" | "PUBLISHED";

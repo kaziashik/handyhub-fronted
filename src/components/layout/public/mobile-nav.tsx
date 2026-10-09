@@ -1,14 +1,15 @@
 "use client";
 
 import { AccountButton } from "@/components/auth/account-button";
+import { useSiteLinks } from "@/components/layout/public/site-nav";
 import { Button } from "@/components/ui/button";
-import { publicRoutes } from "@/routes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export function MobileNav() {
   const pathname = usePathname();
+  const links = useSiteLinks();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -28,7 +29,7 @@ export function MobileNav() {
       </Button>
       {open ? (
         <nav className="fixed inset-x-0 top-16 z-30 flex flex-col gap-3 border-b bg-background px-4 py-4">
-          {publicRoutes.map((route) => (
+          {links.map((route) => (
             <Link key={route.url} href={route.url}>
               {route.name}
             </Link>

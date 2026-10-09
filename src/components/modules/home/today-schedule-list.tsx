@@ -1,6 +1,7 @@
 "use client";
 
 import { getTodaysSchedules } from "@/api/schedule.api";
+import { TechnicianPortrait } from "@/components/modules/technicians/technician-card";
 import { Button } from "@/components/ui/button";
 import { useMe } from "@/hooks/use-me";
 import { apiErrorMessage } from "@/lib/api-error";
@@ -58,7 +59,13 @@ export function TodayScheduleList() {
   }
 
   if (schedules.isPending) {
-    return <p className="text-sm text-muted-foreground">Loading schedules...</p>;
+    return (
+      <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 3 }, (_, index) => (
+          <li key={index} className="h-80 animate-pulse rounded-lg border bg-muted" />
+        ))}
+      </ul>
+    );
   }
 
   if (schedules.isError) {
@@ -79,36 +86,53 @@ export function TodayScheduleList() {
           No schedules are open today.
         </p>
       ) : (
-        <ul className="flex flex-col gap-3">
-          {items.map((schedule) => (
-            <li key={schedule.id} className="rounded-lg border p-4">
-              <p className="font-medium">{schedule.techinician.name}</p>
-              <p className="text-sm text-muted-foreground">
-                {formatTime(schedule.startDateTime)} –{" "}
-                {formatTime(schedule.endDateTime)}
-              </p>
-              <p className="text-sm">
-                Fee {formatFee(schedule.techinician.consultationFee)}
-              </p>
-              <p className="text-sm">
-                {schedule.availableSlots} open{" "}
-                {schedule.availableSlots === 1 ? "slot" : "slots"}
-              </p>
-              <Button
-                variant="outline"
-                className="mt-3"
-                disabled={me.isPending}
-                nativeButton={me.isPending}
-                render={
-                  me.isPending ? undefined : (
-                    <Link href={bookEntryPath(role, schedule.id)}>Book</Link>
-                  )
-                }
-              >
-                Book
-              </Button>
-            </li>
-          ))}
+        <ul className="grid items-stretch gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {items.map((schedule) => {
+            const technician = schedule.techinician;
+            const imageUrl = technician.user?.imageUrl;
+            return (
+              <li key={schedule.id} className="group flex h-full flex-col overflow-hidden rounded-lg border bg-card transition duration-300 hover:-translate-y-1 hover:shadow-md">
+                <TechnicianPortrait
+                  name={technician.name}
+                  imageUrl={imageUrl}
+                  specialization={technician.specialization}
+                />
+                <div className="flex flex-1 flex-col gap-2 p-4">
+                  <h3 className="font-medium">{technician.name}</h3>
+                  <p className="line-clamp-2 text-sm text-muted-foreground">
+                    {technician.bio || technician.specialization || "Published visit for today."}
+                  </p>
+                  <p className="text-sm">
+                    {formatTime(schedule.startDateTime)} – {formatTime(schedule.endDateTime)}
+                  </p>
+                  <p className="text-sm">Fee {formatFee(technician.consultationFee)}</p>
+                  <p className="text-sm">
+                    {schedule.availableSlots} open {schedule.availableSlots === 1 ? "slot" : "slots"}
+                  </p>
+                  <div className="mt-auto flex flex-wrap gap-2 pt-3">
+                    <Button
+                      variant="outline"
+                      render={<Link href={`/technicians/${technician.id}`}>View details</Link>}
+                      nativeButton={false}
+                    >
+                      View details
+                    </Button>
+                    <Button
+                      disabled={me.isPending}
+                      nativeButton={me.isPending}
+                      render={
+                        me.isPending ? undefined : (
+                          <Link href={bookEntryPath(role, schedule.id)}>Book</Link>
+                        )
+                      }
+                    >
+                      Book
+                    </Button>
+                  </div>
+                </div>
+              </li>
+            );
+          })}
         </ul>
       )}
       <div className="flex flex-wrap items-center gap-3">

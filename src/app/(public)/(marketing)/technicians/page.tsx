@@ -1,11 +1,17 @@
 import { PageTitle } from "@/components/modules/page-title";
-import { TechnicianSection } from "@/components/modules/technicians/technician-section";
+import { TechnicianDirectory } from "@/components/modules/technicians/technician-directory";
+import { Suspense } from "react";
 
 export default function TechniciansPage() {
   return (
-    <div className="flex flex-col gap-4 p-6">
-      <PageTitle title="Technicians" detail="People customers can book today." />
-      <TechnicianSection />
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-8">
+      <PageTitle
+        title="Technicians"
+        detail="Approved technicians you can filter by specialty and experience."
+      />
+      <Suspense fallback={<p className="text-sm text-muted-foreground">Loading technicians...</p>}>
+        <TechnicianDirectory />
+      </Suspense>
     </div>
   );
 }

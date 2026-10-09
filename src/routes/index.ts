@@ -23,6 +23,8 @@ export const technicianRoutes = [
 export const adminRoutes = [
   { name: "Overview", url: "/admin" },
   { name: "Technicians", url: "/admin/technicians" },
+  { name: "Customers", url: "/admin/customers" },
   { name: "Appointments", url: "/admin/appointments" },
   { name: "Schedules", url: "/admin/schedules" },
+  { name: "Settings", url: "/admin/settings" },
 ];

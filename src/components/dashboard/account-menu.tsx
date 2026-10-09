@@ -1,6 +1,6 @@
 "use client";
 
-import { LogoutButton } from "@/components/auth/logout-button";
+import { AccountDropdown } from "@/components/auth/account-dropdown";
 import { useMe } from "@/hooks/use-me";
 import Link from "next/link";
 
@@ -8,17 +8,15 @@ export function AccountMenu() {
   const { data, isPending } = useMe();
   const user = data?.data;
 
+  if (user) {
+    return <AccountDropdown />;
+  }
+
+  if (isPending) return null;
+
   return (
-    <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2 text-sm">
-      <Link href="/change-password">Change password</Link>
-      {user ? (
-        <>
-          <span className="font-medium">{user.name}</span>
-          <LogoutButton />
-        </>
-      ) : isPending ? null : (
-        <Link href="/login">Login</Link>
-      )}
-    </div>
+    <Link href="/login" className="text-sm">
+      Login
+    </Link>
   );
 }

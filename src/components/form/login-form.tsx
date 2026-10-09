@@ -38,6 +38,7 @@ export default function LoginForm({ nextPath }: { nextPath?: string }) {
     const me = await queryClient.fetchQuery({
       queryKey: meQueryKey,
       queryFn: getMe,
+      staleTime: 0,
     });
     const role = me?.data?.role;
     if (!role) {
