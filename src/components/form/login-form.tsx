@@ -33,6 +33,7 @@ export default function LoginForm({ nextPath }: { nextPath?: string }) {
   const [pending, setPending] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [selectedDemo, setSelectedDemo] = useState<string | null>(null);
+  const [facebookNote, setFacebookNote] = useState<string | null>(null);
 
   const openSession = useCallback(async () => {
     const me = await queryClient.fetchQuery({
@@ -198,7 +199,26 @@ export default function LoginForm({ nextPath }: { nextPath?: string }) {
         OR CONTINUE WITH
         <span className="h-px flex-1 bg-border" />
       </div>
-      <GoogleLoginButton disabled={pending} onCredential={signInWithGoogle} />
+      <div className="grid grid-cols-2 gap-3">
+        <GoogleLoginButton disabled={pending} onCredential={signInWithGoogle} />
+        <button
+          type="button"
+          disabled={pending}
+          onClick={() => setFacebookNote("Facebook sign-in is not available yet.")}
+          className="flex h-11 items-center justify-center gap-2 rounded-full border bg-background text-sm font-medium disabled:opacity-60"
+        >
+          <svg viewBox="0 0 24 24" className="size-4" aria-hidden>
+            <path
+              fill="#1877F2"
+              d="M24 12.1C24 5.4 18.6 0 12 0S0 5.4 0 12.1C0 18.1 4.4 23.1 10.1 24v-8.4H7.1v-3.5h3V9.4c0-3 1.8-4.6 4.5-4.6 1.3 0 2.6.2 2.6.2v2.9h-1.5c-1.5 0-1.9.9-1.9 1.8v2.2h3.3l-.5 3.5h-2.8V24C19.6 23.1 24 18.1 24 12.1z"
+            />
+          </svg>
+          Facebook
+        </button>
+      </div>
+      {facebookNote ? (
+        <p className="text-center text-sm text-muted-foreground">{facebookNote}</p>
+      ) : null}
       <p className="text-center text-sm text-muted-foreground">
         Don&apos;t have an account?{" "}
         <Link href="/register" className="font-medium text-primary">

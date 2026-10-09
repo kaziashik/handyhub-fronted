@@ -1,5 +1,4 @@
 import LoginForm from "@/components/form/login-form";
-import { BrandLink } from "@/components/layout/brand-link";
 
 export default async function LoginPage({
   searchParams,
@@ -8,9 +7,8 @@ export default async function LoginPage({
 }) {
   const { next } = await searchParams;
   return (
-    <div className="flex min-h-svh flex-col bg-muted/40 px-4 py-6">
-      <BrandLink />
-      <div className="flex flex-1 items-center justify-center py-8">
+    <div className="flex flex-1 flex-col bg-muted/40 px-4 py-8">
+      <div className="flex flex-1 items-center justify-center">
         <div className="w-full max-w-md rounded-3xl border bg-background p-5 shadow-sm md:p-7">
           <LoginForm nextPath={next} />
         </div>

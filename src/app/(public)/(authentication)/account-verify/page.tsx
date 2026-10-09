@@ -8,7 +8,7 @@ export default async function AccountVerifyPage({
   const { email } = await searchParams;
 
   return (
-    <div className="flex min-h-svh items-center justify-center p-6">
+    <div className="flex flex-1 items-center justify-center p-6">
       <VerifyEmailForm email={email ?? ""} />
     </div>
   );
