@@ -45,10 +45,13 @@ export function updateSchedule(
     meetingLink?: string;
   },
 ) {
-  return api<ApiResponse<unknown>>(`/schedule/update-schedule/${scheduleId}`, {
-    method: "PATCH",
-    body,
-  });
+  return api<ApiResponse<unknown>>(
+    `/schedule/update-schedule/${encodeURIComponent(scheduleId)}`,
+    {
+      method: "PATCH",
+      body,
+    },
+  );
 }
 
 export function publishSchedule(scheduleId: string) {

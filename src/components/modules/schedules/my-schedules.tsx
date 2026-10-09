@@ -1,11 +1,13 @@
 "use client";
 
 import { getMySchedules } from "@/api/schedule.api";
+import { EditScheduleForm } from "@/components/form/edit-schedule-form";
 import { Button } from "@/components/ui/button";
 import type { ScheduleStatus } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FetchError } from "ofetch";
+import { useState } from "react";
 
 const statuses: ScheduleStatus[] = ["DRAFT", "PUBLISHED"];
 
@@ -36,6 +38,7 @@ export function MySchedules() {
   const searchParams = useSearchParams();
   const page = Math.max(1, Number(searchParams.get("page") ?? "1") || 1);
   const scheduleStatus = searchParams.get("scheduleStatus") ?? "";
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const schedules = useQuery({
     queryKey: ["my-schedules", page, scheduleStatus],
@@ -111,6 +114,23 @@ export function MySchedules() {
                 >
                   Meeting link
                 </a>
+              ) : null}
+              {schedule.status === "DRAFT" ? (
+                editingId === schedule.id ? (
+                  <EditScheduleForm
+                    schedule={schedule}
+                    onClose={() => setEditingId(null)}
+                  />
+                ) : (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="mt-3"
+                    onClick={() => setEditingId(schedule.id)}
+                  >
+                    Edit
+                  </Button>
+                )
               ) : null}
             </li>
           ))}
