@@ -2,6 +2,7 @@ export type Guide = {
   slug: string;
   title: string;
   summary: string;
+  image: string;
   paragraphs: string[];
 };
 
@@ -10,6 +11,7 @@ export const guides: Guide[] = [
     slug: "book-a-visit",
     title: "How to book a visit",
     summary: "Find a published schedule for today and reserve an open slot.",
+    image: "/images/general.jpg",
     paragraphs: [
       "Open Technicians or the home page to see schedules that are published for today and still have an open slot.",
       "Each listing shows the technician, the start and end time, the consultation fee, and how many slots remain.",
@@ -21,6 +23,7 @@ export const guides: Guide[] = [
     slug: "pay-with-bkash",
     title: "Pay with bKash",
     summary: "HandyHub uses the bKash sandbox checkout for appointment payment.",
+    image: "/images/hero.jpg",
     paragraphs: [
       "Booking a schedule starts a bKash payment and opens the checkout for the consultation fee.",
       "If you leave checkout before paying, the appointment stays pending. Open My appointments and pay it again.",
@@ -32,6 +35,7 @@ export const guides: Guide[] = [
     slug: "become-a-technician",
     title: "Become a technician",
     summary: "Apply with your license, verify the email, then wait for approval.",
+    image: "/images/electrical.jpg",
     paragraphs: [
       "The apply form asks for your name, email, phone, specialization, license number, qualifications, experience, and a resume.",
       "HandyHub emails a one-time code. Verify that code before an admin can review the application.",
