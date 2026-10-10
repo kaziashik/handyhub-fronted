@@ -17,8 +17,30 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://handyhub-web.vercel.app"),
   title: "HandyHub",
   description: "Book a verified technician.",
+  openGraph: {
+    title: "HandyHub",
+    description: "Book a verified technician.",
+    siteName: "HandyHub",
+    type: "website",
+    url: "https://handyhub-web.vercel.app",
+    images: [
+      {
+        url: "/icon-512.png",
+        width: 512,
+        height: 512,
+        alt: "HandyHub",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary",
+    title: "HandyHub",
+    description: "Book a verified technician.",
+    images: ["/icon-512.png"],
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

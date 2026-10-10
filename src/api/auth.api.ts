@@ -2,14 +2,29 @@ import { api } from "@/lib/api-client";
 import type { ApiResponse, AuthUser } from "@/types";
 import { FetchError } from "ofetch";
 
-export function registerUser(body: {
-  name: string;
-  email: string;
-  password: string;
-  role: "CUSTOMER";
-  phone?: string;
-}) {
-  return api<ApiResponse<null>>("/auth/register", { method: "POST", body });
+export function registerUser(
+  body: {
+    name: string;
+    email: string;
+    password: string;
+    role: "CUSTOMER";
+    phone?: string;
+  },
+  photo?: File | null,
+) {
+  if (!photo) {
+    return api<ApiResponse<null>>("/auth/register", { method: "POST", body });
+  }
+
+  const form = new FormData();
+  form.set("name", body.name);
+  form.set("email", body.email);
+  form.set("password", body.password);
+  form.set("role", body.role);
+  if (body.phone) form.set("phone", body.phone);
+  form.set("profileImage", photo);
+
+  return api<ApiResponse<null>>("/auth/register", { method: "POST", body: form });
 }
 
 export function verifyEmail(body: { email: string; otp: string }) {

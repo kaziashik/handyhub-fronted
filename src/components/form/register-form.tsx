@@ -5,11 +5,11 @@ import { DemoLogin } from "@/components/auth/demo-login";
 import { rememberDemoAccount } from "@/lib/demo-accounts";
 import { registerSchema } from "@/validation";
 import { useForm } from "@tanstack/react-form";
-import { Eye, EyeClosed } from "lucide-react";
+import { Eye, EyeClosed, UserRound } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FetchError } from "ofetch";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
@@ -28,6 +28,35 @@ export default function RegisterForm() {
   const [pending, setPending] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [selectedDemo, setSelectedDemo] = useState<string | null>(null);
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [photoError, setPhotoError] = useState<string | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (photoPreview) URL.revokeObjectURL(photoPreview);
+    };
+  }, [photoPreview]);
+
+  function choosePhoto(file: File | null) {
+    if (!file) {
+      setPhoto(null);
+      setPhotoPreview(null);
+      setPhotoError(null);
+      return;
+    }
+    if (!file.type.startsWith("image/")) {
+      setPhotoError("Choose an image file.");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setPhotoError("Photo must be 2MB or smaller.");
+      return;
+    }
+    setPhoto(file);
+    setPhotoPreview(URL.createObjectURL(file));
+    setPhotoError(null);
+  }
 
   const form = useForm({
     defaultValues: {
@@ -40,17 +69,21 @@ export default function RegisterForm() {
       onSubmit: registerSchema,
     },
     onSubmit: async ({ value }) => {
+      if (photoError) return;
       setErrorMessage(null);
       setPending(true);
       const phone = value.phone.trim();
       try {
-        await registerUser({
-          name: value.name.trim(),
-          email: value.email.trim(),
-          password: value.password,
-          role: "CUSTOMER",
-          ...(phone ? { phone } : {}),
-        });
+        await registerUser(
+          {
+            name: value.name.trim(),
+            email: value.email.trim(),
+            password: value.password,
+            role: "CUSTOMER",
+            ...(phone ? { phone } : {}),
+          },
+          photo,
+        );
         router.push(
           `/account-verify?email=${encodeURIComponent(value.email.trim())}`,
         );
@@ -93,6 +126,39 @@ export default function RegisterForm() {
         }}
       >
         <FieldGroup>
+          <div className="flex items-center gap-4">
+            <label className="relative flex size-20 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-full border bg-muted">
+              {photoPreview ? (
+                <img src={photoPreview} alt="" className="size-full object-cover" />
+              ) : (
+                <UserRound className="size-8 text-muted-foreground" aria-hidden />
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                className="sr-only"
+                onChange={(event) => choosePhoto(event.target.files?.[0] ?? null)}
+              />
+            </label>
+            <div className="flex flex-col gap-1">
+              <p className="text-sm font-medium">Profile photo</p>
+              <p className="text-xs text-muted-foreground">
+                Optional. JPG or PNG, up to 2MB.
+              </p>
+              {photo ? (
+                <button
+                  type="button"
+                  className="w-fit text-xs font-medium text-primary"
+                  onClick={() => choosePhoto(null)}
+                >
+                  Remove photo
+                </button>
+              ) : null}
+              {photoError ? (
+                <p className="text-xs text-destructive">{photoError}</p>
+              ) : null}
+            </div>
+          </div>
           <form.Field name="name">
             {(field) => {
               const isInvalid =
@@ -106,6 +172,7 @@ export default function RegisterForm() {
                     value={field.state.value}
                     onBlur={field.handleBlur}
                     onChange={(event) => field.handleChange(event.target.value)}
+                    className="h-11 rounded-full px-4"
                     aria-invalid={isInvalid}
                   />
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
@@ -129,6 +196,7 @@ export default function RegisterForm() {
                     onBlur={field.handleBlur}
                     onChange={(event) => field.handleChange(event.target.value)}
                     autoComplete="off"
+                    className="h-11 rounded-full px-4"
                     aria-invalid={isInvalid}
                   />
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
@@ -147,6 +215,7 @@ export default function RegisterForm() {
                   value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={(event) => field.handleChange(event.target.value)}
+                  className="h-11 rounded-full px-4"
                 />
               </Field>
             )}
@@ -170,6 +239,7 @@ export default function RegisterForm() {
                         field.handleChange(event.target.value)
                       }
                       autoComplete="new-password"
+                      className="h-11 rounded-full px-4 pr-10"
                       aria-invalid={isInvalid}
                     />
                     <button
@@ -184,6 +254,9 @@ export default function RegisterForm() {
                       )}
                     </button>
                   </div>
+                  <p className="text-xs text-muted-foreground">
+                    At least 8 characters, with an uppercase letter, a lowercase letter, a number, and a symbol.
+                  </p>
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
                 </Field>
               );
@@ -193,7 +266,7 @@ export default function RegisterForm() {
           {errorMessage ? (
             <p className="text-sm text-destructive">{errorMessage}</p>
           ) : null}
-          <Button type="submit" disabled={pending}>
+          <Button type="submit" disabled={pending} className="h-11 w-full rounded-full text-base">
             {pending ? "Creating account..." : "Register"}
           </Button>
         </FieldGroup>
