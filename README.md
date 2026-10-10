@@ -1,5 +1,7 @@
 # 🔧 HandyHub — Frontend
 
+![HandyHub poster](../handyhub-poster.png)
+
 A modern, responsive **Next.js** home-services marketplace. Customers book a verified technician, technicians publish the hours they can work, and admins approve applications and watch bookings — all through role-based dashboards.
 
 [![Live Site](https://img.shields.io/badge/Live-handyhub--web.vercel.app-0c6b52)](https://handyhub-web.vercel.app)
