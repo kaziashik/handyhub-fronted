@@ -44,7 +44,9 @@ export function dismissToast(id: number) {
 export function subscribeToasts(listener: () => void) {
   const current = store();
   current.listeners.add(listener);
-  return () => current.listeners.delete(listener);
+  return () => {
+    current.listeners.delete(listener);
+  };
 }
 
 export function getToasts() {
