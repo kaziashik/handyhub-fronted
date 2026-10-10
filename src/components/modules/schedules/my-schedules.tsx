@@ -8,6 +8,7 @@ import {
 import { EditScheduleForm } from "@/components/form/edit-schedule-form";
 import { Button } from "@/components/ui/button";
 import { apiErrorMessage } from "@/lib/api-error";
+import { toast } from "@/lib/toast";
 import type { ScheduleStatus } from "@/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -79,6 +80,7 @@ export function MySchedules() {
       await queryClient.invalidateQueries({ queryKey: ["my-schedules"] });
       await queryClient.invalidateQueries({ queryKey: ["technician-analytics"] });
       if (editingId === scheduleId) setEditingId(null);
+      toast.success("Schedule published");
     } catch (error) {
       setPublishError({ id: scheduleId, message: publishErrorMessage(error) });
     } finally {
@@ -94,6 +96,7 @@ export function MySchedules() {
       await queryClient.invalidateQueries({ queryKey: ["my-schedules"] });
       await queryClient.invalidateQueries({ queryKey: ["technician-analytics"] });
       if (editingId === scheduleId) setEditingId(null);
+      toast.success("Schedule deleted");
     } catch (error) {
       setDeleteError({ id: scheduleId, message: deleteErrorMessage(error) });
     } finally {

@@ -2,6 +2,7 @@
 
 import { applyAsTechnician } from "@/api/technician.api";
 import { serviceCatalog } from "@/content/services";
+import { toast } from "@/lib/toast";
 import { applyTechnicianSchema } from "@/validation";
 import { useForm } from "@tanstack/react-form";
 import {
@@ -250,6 +251,7 @@ export default function ApplyTechnicianForm() {
       const email = value.email.trim().toLowerCase();
       try {
         await applyAsTechnician(body);
+        toast.success("Application sent. Check your email for the code.");
         router.push(`/apply/verify?email=${encodeURIComponent(email)}`);
       } catch (error) {
         setErrorMessage(applyErrorMessage(error));

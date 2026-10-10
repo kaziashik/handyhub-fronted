@@ -1,6 +1,7 @@
 "use client";
 
 import { resetPassword } from "@/api/auth.api";
+import { toast } from "@/lib/toast";
 import { resetPasswordSchema } from "@/validation";
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
@@ -42,6 +43,7 @@ export default function ResetPasswordForm({ email }: { email: string }) {
           newPassword: value.newPassword,
         });
         setDone(true);
+        toast.success("Password changed successfully");
       } catch (error) {
         setErrorMessage(resetPasswordErrorMessage(error));
       } finally {

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { meQueryKey, useMe } from "@/hooks/use-me";
+import { toast } from "@/lib/toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { FetchError } from "ofetch";
 import { useState, type FormEvent } from "react";
@@ -49,7 +50,8 @@ export function ProfilePhoto() {
       await queryClient.invalidateQueries({ queryKey: meQueryKey });
       setFile(null);
       setInputKey((current) => current + 1);
-      setMessage("Profile image uploaded successfully");
+      setMessage(null);
+      toast.success("Profile photo updated");
     } catch (error) {
       setErrorMessage(uploadErrorMessage(error));
     } finally {

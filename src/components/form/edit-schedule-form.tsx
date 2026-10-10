@@ -4,6 +4,7 @@ import { updateSchedule } from "@/api/schedule.api";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { toast } from "@/lib/toast";
 import type { TechnicianSchedule } from "@/types";
 import { createScheduleSchema } from "@/validation";
 import { useForm } from "@tanstack/react-form";
@@ -64,6 +65,7 @@ export function EditScheduleForm({
         await queryClient.invalidateQueries({
           queryKey: ["technician-analytics"],
         });
+        toast.success("Schedule updated");
         onClose();
       } catch (error) {
         setErrorMessage(editErrorMessage(error));

@@ -4,6 +4,7 @@ import { sendContactMessage } from "@/api/user.api";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { toast } from "@/lib/toast";
 import { CircleCheck, CircleAlert } from "lucide-react";
 import { FetchError } from "ofetch";
 import { FormEvent, useState } from "react";
@@ -47,6 +48,7 @@ export function ContactForm() {
     try {
       const result = await sendContactMessage({ name, email, message: note });
       form.reset();
+      toast.success("Message sent. We will reply by email.");
       setStatus({
         kind: "success",
         text: result.message || "Message sent. We will reply by email.",

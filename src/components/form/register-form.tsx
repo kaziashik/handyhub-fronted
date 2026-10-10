@@ -3,6 +3,7 @@
 import { registerUser } from "@/api/auth.api";
 import { DemoLogin } from "@/components/auth/demo-login";
 import { rememberDemoAccount } from "@/lib/demo-accounts";
+import { toast } from "@/lib/toast";
 import { registerSchema } from "@/validation";
 import { useForm } from "@tanstack/react-form";
 import { Eye, EyeClosed, UserRound } from "lucide-react";
@@ -84,6 +85,7 @@ export default function RegisterForm() {
           },
           photo,
         );
+        toast.success("Account created. Check your email for the code.");
         router.push(
           `/account-verify?email=${encodeURIComponent(value.email.trim())}`,
         );

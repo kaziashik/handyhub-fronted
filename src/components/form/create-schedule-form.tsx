@@ -4,6 +4,7 @@ import { createSchedule } from "@/api/schedule.api";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { toast } from "@/lib/toast";
 import { createScheduleSchema } from "@/validation";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
@@ -27,7 +28,6 @@ function createErrorMessage(error: unknown) {
 export function CreateScheduleForm() {
   const queryClient = useQueryClient();
   const [pending, setPending] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const form = useForm({
@@ -40,7 +40,6 @@ export function CreateScheduleForm() {
       onSubmit: createScheduleSchema,
     },
     onSubmit: async ({ value }) => {
-      setMessage(null);
       setErrorMessage(null);
       setPending(true);
       try {
@@ -52,7 +51,7 @@ export function CreateScheduleForm() {
         await queryClient.invalidateQueries({ queryKey: ["my-schedules"] });
         await queryClient.invalidateQueries({ queryKey: ["technician-analytics"] });
         form.reset();
-        setMessage("Schedule created successfully");
+        toast.success("Schedule created successfully");
       } catch (error) {
         setErrorMessage(createErrorMessage(error));
       } finally {
@@ -101,7 +100,6 @@ export function CreateScheduleForm() {
       {errorMessage ? (
         <p className="text-sm text-destructive">{errorMessage}</p>
       ) : null}
-      {message ? <p className="text-sm">{message}</p> : null}
       <Button type="submit" className="w-fit" disabled={pending}>
         {pending ? "Creating..." : "Create schedule"}
       </Button>

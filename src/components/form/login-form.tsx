@@ -4,6 +4,7 @@ import { GoogleLoginButton } from "@/components/auth/google-login-button";
 import { getMe, googleLogin, login } from "@/api/auth.api";
 import { meQueryKey } from "@/hooks/use-me";
 import { pathAfterLogin } from "@/lib/role-redirect";
+import { toast } from "@/lib/toast";
 import { loginSchema } from "@/validation";
 import { DemoLogin } from "@/components/auth/demo-login";
 import { takeDemoAccount, type DemoAccount } from "@/lib/demo-accounts";
@@ -46,6 +47,7 @@ export default function LoginForm({ nextPath }: { nextPath?: string }) {
       setErrorMessage("Signed in, but the profile could not be loaded.");
       return;
     }
+    toast.success("Signed in successfully");
     router.push(pathAfterLogin(role, nextPath));
   }, [nextPath, queryClient, router]);
 

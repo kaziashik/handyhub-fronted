@@ -7,11 +7,12 @@ import {
 } from "@/api/appointment.api";
 import { Button } from "@/components/ui/button";
 import { apiErrorMessage } from "@/lib/api-error";
+import { toast } from "@/lib/toast";
 import type { AppointmentStatus } from "@/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const statuses: AppointmentStatus[] = [
   "PENDING",
@@ -55,6 +56,22 @@ function label(status: string) {
   return status.charAt(0) + status.slice(1).toLowerCase();
 }
 
+function paymentReturnMessage(status: string | null, error: string | null) {
+  if (status === "success") {
+    return "Payment successful. This appointment is confirmed.";
+  }
+  if (status === "failure") {
+    return "Payment failed. You can try again from a pending appointment.";
+  }
+  if (status === "cancel") {
+    return "Payment was cancelled. You can try again from a pending appointment.";
+  }
+  if (error === "payment-failed") {
+    return "Payment could not be completed.";
+  }
+  return null;
+}
+
 export function MyAppointments() {
   const router = useRouter();
   const pathname = usePathname();
@@ -73,6 +90,24 @@ export function MyAppointments() {
     message: string;
   } | null>(null);
   const busy = payingId !== null || cancellingId !== null;
+  const shownPaymentReturn = useRef<string | null>(null);
+
+  useEffect(() => {
+    const status = searchParams.get("status");
+    const error = searchParams.get("error");
+    const message = paymentReturnMessage(status, error);
+    if (!message) return;
+    const key = `${status ?? ""}:${error ?? ""}`;
+    if (shownPaymentReturn.current === key) return;
+    shownPaymentReturn.current = key;
+    if (status === "success") toast.success(message);
+    else toast.error(message);
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("status");
+    params.delete("error");
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname);
+  }, [pathname, router, searchParams]);
 
   async function handlePay(appointmentId: string) {
     setPayError(null);

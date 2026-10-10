@@ -3,6 +3,7 @@
 import { logout } from "@/api/auth.api";
 import { Button } from "@/components/ui/button";
 import { meQueryKey } from "@/hooks/use-me";
+import { toast } from "@/lib/toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -17,6 +18,7 @@ export function LogoutButton() {
     try {
       await logout();
       queryClient.setQueryData(meQueryKey, null);
+      toast.success("Signed out");
       router.replace("/");
     } catch {
       setPending(false);

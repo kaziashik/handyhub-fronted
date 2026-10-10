@@ -1,5 +1,6 @@
 "use client";
 
+import { Toaster } from "@/components/ui/toaster";
 import { useMe } from "@/hooks/use-me";
 import { applyTheme, readStoredTheme } from "@/lib/theme";
 import { ReactNode, useLayoutEffect } from "react";
@@ -23,6 +24,7 @@ export default function Providers({ children }: { children: ReactNode }) {
       <ThemeSync />
       <LoadCurrentUser />
       {children}
+      <Toaster />
     </QueryProvider>
   );
 }
