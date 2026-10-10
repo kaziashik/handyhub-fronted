@@ -4,9 +4,11 @@ import { demoAccounts, type DemoAccount } from "@/lib/demo-accounts";
 
 export function DemoLogin({
   selectedId,
+  disabled,
   onSelect,
 }: {
   selectedId: string | null;
+  disabled?: boolean;
   onSelect: (account: DemoAccount) => void;
 }) {
   return (
@@ -21,6 +23,7 @@ export function DemoLogin({
             <button
               key={account.id}
               type="button"
+              disabled={disabled}
               aria-pressed={selected}
               onClick={() => onSelect(account)}
               className={`rounded-2xl border bg-background px-3 py-3 text-center transition-colors ${
@@ -29,6 +32,7 @@ export function DemoLogin({
             >
               <span className="block text-sm font-semibold text-primary">{account.title}</span>
               <span className="mt-1 block text-xs leading-5 text-muted-foreground">{account.detail}</span>
+              <span className="mt-2 block text-xs font-medium">Demo login</span>
             </button>
           );
         })}

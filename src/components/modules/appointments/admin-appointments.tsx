@@ -3,6 +3,7 @@
 import { cancelAppointment, getAllAppointments } from "@/api/appointment.api";
 import { Button } from "@/components/ui/button";
 import { apiErrorMessage } from "@/lib/api-error";
+import { toastError } from "@/lib/toast";
 import type { AppointmentStatus } from "@/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -69,7 +70,7 @@ export function AdminAppointments() {
     } catch (error) {
       setCancelError({
         id: appointmentId,
-        message: cancelErrorMessage(error),
+        message: toastError(cancelErrorMessage(error)),
       });
     } finally {
       setCancellingId(null);

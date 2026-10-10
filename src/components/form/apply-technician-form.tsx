@@ -2,7 +2,7 @@
 
 import { applyAsTechnician } from "@/api/technician.api";
 import { serviceCatalog } from "@/content/services";
-import { toast } from "@/lib/toast";
+import { toast, toastError } from "@/lib/toast";
 import { applyTechnicianSchema } from "@/validation";
 import { useForm } from "@tanstack/react-form";
 import {
@@ -156,7 +156,7 @@ const sections: {
 const steps = [
   "Add your name, trade, and license.",
   "Attach a resume. Extra photos are optional.",
-  "Confirm the email code, then wait for approval.",
+  "Review the application and send it.",
 ];
 
 function applyErrorMessage(error: unknown) {
@@ -164,6 +164,7 @@ function applyErrorMessage(error: unknown) {
     const body = error.data as { message?: string } | undefined;
     return body?.message ?? "Could not submit the application";
   }
+  if (error instanceof Error && error.message) return error.message;
   return "Could not submit the application";
 }
 
@@ -185,6 +186,8 @@ export default function ApplyTechnicianForm() {
   const [additionalFiles, setAdditionalFiles] = useState<File[]>([]);
   const [fileMessage, setFileMessage] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [step, setStep] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const router = useRouter();
 
@@ -248,18 +251,61 @@ export default function ApplyTechnicianForm() {
       }
 
       setPending(true);
+      setUploadProgress(0);
       const email = value.email.trim().toLowerCase();
       try {
-        await applyAsTechnician(body);
+        await applyAsTechnician(body, setUploadProgress);
         toast.success("Application sent. Check your email for the code.");
         router.push(`/apply/verify?email=${encodeURIComponent(email)}`);
       } catch (error) {
-        setErrorMessage(applyErrorMessage(error));
+        setErrorMessage(toastError(applyErrorMessage(error)));
       } finally {
         setPending(false);
       }
     },
   });
+
+  function continueStep() {
+    const values = form.state.values;
+    setErrorMessage(null);
+    if (step === 0) {
+      if (values.name.trim().length < 2) {
+        setErrorMessage("Enter your full name.");
+        return;
+      }
+      if (!values.email.includes("@")) {
+        setErrorMessage("Enter a valid email.");
+        return;
+      }
+      if (values.specialization.trim().length < 2) {
+        setErrorMessage("Choose a specialization.");
+        return;
+      }
+      if (values.licenseNumber.trim().length < 3) {
+        setErrorMessage("Enter a license number.");
+        return;
+      }
+      if (values.qualifications.trim().length < 2) {
+        setErrorMessage("Enter your qualifications.");
+        return;
+      }
+      if (!/^\d+$/.test(values.experienceYears.trim())) {
+        setErrorMessage("Enter years of experience as a number.");
+        return;
+      }
+      setStep(1);
+      return;
+    }
+    if (!resume) {
+      setFileMessage("Resume is required");
+      return;
+    }
+    setFileMessage(null);
+    setStep(2);
+  }
+
+  const visibleSections =
+    step === 0 ? sections.slice(0, 2) : step === 1 ? sections.slice(2) : [];
 
   return (
     <div className="animate-rise grid w-full gap-6 lg:grid-cols-[18rem_minmax(0,1fr)]">
@@ -278,12 +324,15 @@ export default function ApplyTechnicianForm() {
             Share your license and resume. After the email code is confirmed, an admin reviews the application.
           </p>
           <ol className="flex flex-col gap-3">
-            {steps.map((step, index) => (
-              <li key={step} className="flex gap-3 text-sm leading-6">
+            {steps.map((label, index) => (
+              <li
+                key={label}
+                className={`flex gap-3 text-sm leading-6 ${index === step ? "text-white" : "text-slate-400"}`}
+              >
                 <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-white/15 text-xs">
                   {index + 1}
                 </span>
-                {step}
+                {label}
               </li>
             ))}
           </ol>
@@ -294,6 +343,10 @@ export default function ApplyTechnicianForm() {
         className="flex flex-col gap-6 rounded-2xl border bg-background p-5 shadow-sm md:p-8"
         onSubmit={(event) => {
           event.preventDefault();
+          if (step < 2) {
+            continueStep();
+            return;
+          }
           form.handleSubmit();
         }}
       >
@@ -317,7 +370,7 @@ export default function ApplyTechnicianForm() {
           }}
         </form.Subscribe>
 
-        {sections.map((section) => (
+        {visibleSections.map((section) => (
           <section key={section.title} className="flex flex-col gap-4">
             <div className="flex items-start gap-3">
               <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -403,6 +456,7 @@ export default function ApplyTechnicianForm() {
           </section>
         ))}
 
+        {step === 1 ? (
         <section className="flex flex-col gap-4">
           <div className="flex items-start gap-3">
             <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -448,6 +502,39 @@ export default function ApplyTechnicianForm() {
             </ul>
           ) : null}
         </section>
+        ) : null}
+
+        {step === 2 ? (
+          <form.Subscribe selector={(state) => state.values}>
+            {(values) => (
+              <section className="flex flex-col gap-3 text-sm">
+                <h2 className="font-medium">Review</h2>
+                <p>Name: {values.name}</p>
+                <p>Email: {values.email}</p>
+                <p>Trade: {values.specialization}</p>
+                <p>License: {values.licenseNumber}</p>
+                <p>Experience: {values.experienceYears} years</p>
+                <p>Resume: {resume?.name}</p>
+                <p>
+                  Extra files:{" "}
+                  {additionalFiles.length ? additionalFiles.map((file) => file.name).join(", ") : "None"}
+                </p>
+              </section>
+            )}
+          </form.Subscribe>
+        ) : null}
+
+        {pending ? (
+          <div className="flex flex-col gap-2">
+            <div className="h-2 overflow-hidden rounded-full bg-muted">
+              <div
+                className="h-full rounded-full bg-primary transition-all"
+                style={{ width: `${uploadProgress}%` }}
+              />
+            </div>
+            <p className="text-sm text-muted-foreground">Uploading {uploadProgress}%</p>
+          </div>
+        ) : null}
 
         {fileMessage ? <p className="text-sm text-destructive">{fileMessage}</p> : null}
         {errorMessage ? <p className="text-sm text-destructive">{errorMessage}</p> : null}
@@ -456,9 +543,29 @@ export default function ApplyTechnicianForm() {
           <Link href="/login" className="text-sm text-muted-foreground underline-offset-4 hover:underline">
             Back to login
           </Link>
-          <Button type="submit" disabled={pending} className="h-10 px-6">
-            {pending ? "Sending application..." : "Submit application"}
-          </Button>
+          <div className="flex gap-2">
+            {step > 0 ? (
+              <Button
+                type="button"
+                variant="outline"
+                disabled={pending}
+                className="h-10 px-6"
+                onClick={() => {
+                  setErrorMessage(null);
+                  setStep((current) => current - 1);
+                }}
+              >
+                Back
+              </Button>
+            ) : null}
+            <Button type="submit" disabled={pending} className="h-10 px-6">
+              {pending
+                ? "Sending application..."
+                : step < 2
+                  ? "Continue"
+                  : "Submit application"}
+            </Button>
+          </div>
         </div>
       </form>
     </div>

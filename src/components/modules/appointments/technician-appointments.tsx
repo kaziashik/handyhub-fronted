@@ -6,6 +6,7 @@ import {
 } from "@/api/appointment.api";
 import { Button } from "@/components/ui/button";
 import { apiErrorMessage } from "@/lib/api-error";
+import { toastError } from "@/lib/toast";
 import type { AppointmentStatus } from "@/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -79,7 +80,7 @@ export function TechnicianAppointments() {
       await queryClient.invalidateQueries({ queryKey: ["doctor-appointments"] });
       await queryClient.invalidateQueries({ queryKey: ["technician-analytics"] });
     } catch (error) {
-      setStatusError({ id: appointmentId, message: statusErrorMessage(error) });
+      setStatusError({ id: appointmentId, message: toastError(statusErrorMessage(error)) });
     } finally {
       setUpdatingId(null);
     }

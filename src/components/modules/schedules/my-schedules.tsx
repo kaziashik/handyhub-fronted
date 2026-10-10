@@ -8,7 +8,7 @@ import {
 import { EditScheduleForm } from "@/components/form/edit-schedule-form";
 import { Button } from "@/components/ui/button";
 import { apiErrorMessage } from "@/lib/api-error";
-import { toast } from "@/lib/toast";
+import { toast, toastError } from "@/lib/toast";
 import type { ScheduleStatus } from "@/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -82,7 +82,7 @@ export function MySchedules() {
       if (editingId === scheduleId) setEditingId(null);
       toast.success("Schedule published");
     } catch (error) {
-      setPublishError({ id: scheduleId, message: publishErrorMessage(error) });
+      setPublishError({ id: scheduleId, message: toastError(publishErrorMessage(error)) });
     } finally {
       setPublishingId(null);
     }
@@ -98,7 +98,7 @@ export function MySchedules() {
       if (editingId === scheduleId) setEditingId(null);
       toast.success("Schedule deleted");
     } catch (error) {
-      setDeleteError({ id: scheduleId, message: deleteErrorMessage(error) });
+      setDeleteError({ id: scheduleId, message: toastError(deleteErrorMessage(error)) });
     } finally {
       setDeletingId(null);
     }

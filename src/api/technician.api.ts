@@ -1,4 +1,4 @@
-import { api } from "@/lib/api-client";
+import { api, apiUrl } from "@/lib/api-client";
 import type {
   ApiResponse,
   ListQuery,
@@ -6,10 +6,33 @@ import type {
   TechnicianApplication,
 } from "@/types";
 
-export function applyAsTechnician(body: FormData) {
-  return api<ApiResponse<unknown>>("/techinician/apply-as-techinician", {
-    method: "POST",
-    body,
+export function applyAsTechnician(
+  body: FormData,
+  onProgress?: (percent: number) => void,
+) {
+  return new Promise<ApiResponse<unknown>>((resolve, reject) => {
+    const request = new XMLHttpRequest();
+    request.open("POST", apiUrl("/techinician/apply-as-techinician"));
+    request.withCredentials = true;
+    request.upload.onprogress = (event) => {
+      if (!onProgress || !event.lengthComputable) return;
+      onProgress(Math.min(100, Math.round((event.loaded / event.total) * 100)));
+    };
+    request.onerror = () => reject(new Error("Could not upload the application"));
+    request.onload = () => {
+      let payload: ApiResponse<unknown> | null = null;
+      try {
+        payload = JSON.parse(request.responseText) as ApiResponse<unknown>;
+      } catch {
+        payload = null;
+      }
+      if (request.status >= 200 && request.status < 300 && payload) {
+        resolve(payload);
+        return;
+      }
+      reject(new Error(payload?.message || "Could not submit the application"));
+    };
+    request.send(body);
   });
 }
 

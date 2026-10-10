@@ -3,7 +3,8 @@
 import { logout } from "@/api/auth.api";
 import { Button } from "@/components/ui/button";
 import { meQueryKey } from "@/hooks/use-me";
-import { toast } from "@/lib/toast";
+import { clearSessionRole } from "@/lib/session-role";
+import { toast, toastError } from "@/lib/toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -17,10 +18,12 @@ export function LogoutButton() {
     setPending(true);
     try {
       await logout();
+      clearSessionRole();
       queryClient.setQueryData(meQueryKey, null);
       toast.success("Signed out");
       router.replace("/");
-    } catch {
+    } catch (error) {
+      toastError(error instanceof Error ? error.message : "Could not sign out");
       setPending(false);
     }
   }

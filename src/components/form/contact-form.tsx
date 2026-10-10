@@ -4,7 +4,7 @@ import { sendContactMessage } from "@/api/user.api";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/lib/toast";
+import { toast, toastError } from "@/lib/toast";
 import { CircleCheck, CircleAlert } from "lucide-react";
 import { FetchError } from "ofetch";
 import { FormEvent, useState } from "react";
@@ -54,7 +54,7 @@ export function ContactForm() {
         text: result.message || "Message sent. We will reply by email.",
       });
     } catch (error) {
-      setStatus({ kind: "error", text: contactErrorMessage(error) });
+      setStatus({ kind: "error", text: toastError(contactErrorMessage(error)) });
     } finally {
       setPending(false);
     }

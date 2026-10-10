@@ -4,6 +4,7 @@ import { approveTechnician, getAllTechnicians } from "@/api/technician.api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { apiErrorMessage } from "@/lib/api-error";
+import { toastError } from "@/lib/toast";
 import type { TechnicianVerificationStatus } from "@/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -76,7 +77,7 @@ export function TechnicianApplications() {
     } catch (error) {
       setReviewError({
         id: techinicianId,
-        message: reviewErrorMessage(error),
+        message: toastError(reviewErrorMessage(error)),
       });
     } finally {
       setReviewingId(null);

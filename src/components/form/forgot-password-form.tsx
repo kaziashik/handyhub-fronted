@@ -1,7 +1,7 @@
 "use client";
 
 import { forgotPassword } from "@/api/auth.api";
-import { toast } from "@/lib/toast";
+import { toast, toastError } from "@/lib/toast";
 import { forgotPasswordSchema } from "@/validation";
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
@@ -41,7 +41,7 @@ export default function ForgotPasswordForm() {
         setSentTo(email);
         toast.success("Reset code sent. Check your email.");
       } catch (error) {
-        setErrorMessage(forgotPasswordErrorMessage(error));
+        setErrorMessage(toastError(forgotPasswordErrorMessage(error)));
       } finally {
         setPending(false);
       }

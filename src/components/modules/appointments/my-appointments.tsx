@@ -7,7 +7,7 @@ import {
 } from "@/api/appointment.api";
 import { Button } from "@/components/ui/button";
 import { apiErrorMessage } from "@/lib/api-error";
-import { toast } from "@/lib/toast";
+import { toast, toastError } from "@/lib/toast";
 import type { AppointmentStatus } from "@/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
@@ -125,7 +125,7 @@ export function MyAppointments() {
       }
       window.location.assign(paymentUrl);
     } catch (error) {
-      setPayError({ id: appointmentId, message: payErrorMessage(error) });
+      setPayError({ id: appointmentId, message: toastError(payErrorMessage(error)) });
       setPayingId(null);
     }
   }
@@ -140,7 +140,7 @@ export function MyAppointments() {
     } catch (error) {
       setCancelError({
         id: appointmentId,
-        message: cancelErrorMessage(error),
+        message: toastError(cancelErrorMessage(error)),
       });
     } finally {
       setCancellingId(null);

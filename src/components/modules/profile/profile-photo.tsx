@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { meQueryKey, useMe } from "@/hooks/use-me";
-import { toast } from "@/lib/toast";
+import { toast, toastError } from "@/lib/toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { FetchError } from "ofetch";
 import { useState, type FormEvent } from "react";
@@ -53,7 +53,7 @@ export function ProfilePhoto() {
       setMessage(null);
       toast.success("Profile photo updated");
     } catch (error) {
-      setErrorMessage(uploadErrorMessage(error));
+      setErrorMessage(toastError(uploadErrorMessage(error)));
     } finally {
       setPending(false);
     }

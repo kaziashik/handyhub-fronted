@@ -4,7 +4,7 @@ import { createSchedule } from "@/api/schedule.api";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/lib/toast";
+import { toast, toastError } from "@/lib/toast";
 import { createScheduleSchema } from "@/validation";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
@@ -53,7 +53,7 @@ export function CreateScheduleForm() {
         form.reset();
         toast.success("Schedule created successfully");
       } catch (error) {
-        setErrorMessage(createErrorMessage(error));
+        setErrorMessage(toastError(createErrorMessage(error)));
       } finally {
         setPending(false);
       }

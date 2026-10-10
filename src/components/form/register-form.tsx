@@ -3,7 +3,7 @@
 import { registerUser } from "@/api/auth.api";
 import { DemoLogin } from "@/components/auth/demo-login";
 import { rememberDemoAccount } from "@/lib/demo-accounts";
-import { toast } from "@/lib/toast";
+import { toast, toastError } from "@/lib/toast";
 import { registerSchema } from "@/validation";
 import { useForm } from "@tanstack/react-form";
 import { Eye, EyeClosed, UserRound } from "lucide-react";
@@ -90,7 +90,7 @@ export default function RegisterForm() {
           `/account-verify?email=${encodeURIComponent(value.email.trim())}`,
         );
       } catch (error) {
-        setErrorMessage(registerErrorMessage(error));
+        setErrorMessage(toastError(registerErrorMessage(error)));
       } finally {
         setPending(false);
       }

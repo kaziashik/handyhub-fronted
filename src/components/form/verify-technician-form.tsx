@@ -1,7 +1,7 @@
 "use client";
 
 import { verifyTechnicianEmail } from "@/api/technician.api";
-import { toast } from "@/lib/toast";
+import { toast, toastError } from "@/lib/toast";
 import { verifyEmailSchema } from "@/validation";
 import { useForm } from "@tanstack/react-form";
 import { useRouter } from "next/navigation";
@@ -43,7 +43,7 @@ export default function VerifyTechnicianForm({ email }: { email: string }) {
         toast.success("Email verified. Your application is with the admin.");
         router.push("/apply/success");
       } catch (error) {
-        setErrorMessage(verifyErrorMessage(error));
+        setErrorMessage(toastError(verifyErrorMessage(error)));
       } finally {
         setPending(false);
       }

@@ -3,7 +3,7 @@
 import { verifyEmail } from "@/api/auth.api";
 import { meQueryKey } from "@/hooks/use-me";
 import { dashboardPath } from "@/lib/role-redirect";
-import { toast } from "@/lib/toast";
+import { toast, toastError } from "@/lib/toast";
 import { verifyEmailSchema } from "@/validation";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
@@ -55,7 +55,7 @@ export default function VerifyEmailForm({ email }: { email: string }) {
         toast.success("Email verified. Your account is ready.");
         router.push(user?.role ? dashboardPath(user.role) : "/customer");
       } catch (error) {
-        setErrorMessage(verifyErrorMessage(error));
+        setErrorMessage(toastError(verifyErrorMessage(error)));
       } finally {
         setPending(false);
       }

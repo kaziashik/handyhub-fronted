@@ -2,6 +2,7 @@
 
 import { bookAppointment } from "@/api/appointment.api";
 import { Button } from "@/components/ui/button";
+import { toastError } from "@/lib/toast";
 import { FetchError } from "ofetch";
 import { useState } from "react";
 
@@ -30,7 +31,7 @@ export function BookVisit({ scheduleId }: { scheduleId: string }) {
       }
       window.location.assign(paymentUrl);
     } catch (error) {
-      setErrorMessage(bookErrorMessage(error));
+      setErrorMessage(toastError(bookErrorMessage(error)));
       setPending(false);
     }
   }

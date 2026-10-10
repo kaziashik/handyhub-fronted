@@ -4,7 +4,8 @@ import { GoogleLoginButton } from "@/components/auth/google-login-button";
 import { getMe, googleLogin, login } from "@/api/auth.api";
 import { meQueryKey } from "@/hooks/use-me";
 import { pathAfterLogin } from "@/lib/role-redirect";
-import { toast } from "@/lib/toast";
+import { toast, toastError } from "@/lib/toast";
+import { writeSessionRole } from "@/lib/session-role";
 import { loginSchema } from "@/validation";
 import { DemoLogin } from "@/components/auth/demo-login";
 import { takeDemoAccount, type DemoAccount } from "@/lib/demo-accounts";
@@ -47,6 +48,7 @@ export default function LoginForm({ nextPath }: { nextPath?: string }) {
       setErrorMessage("Signed in, but the profile could not be loaded.");
       return;
     }
+    writeSessionRole(role);
     toast.success("Signed in successfully");
     router.push(pathAfterLogin(role, nextPath));
   }, [nextPath, queryClient, router]);
@@ -59,7 +61,7 @@ export default function LoginForm({ nextPath }: { nextPath?: string }) {
         await googleLogin({ idToken });
         await openSession();
       } catch (error) {
-        setErrorMessage(loginErrorMessage(error));
+        setErrorMessage(toastError(loginErrorMessage(error)));
       } finally {
         setPending(false);
       }
@@ -82,30 +84,39 @@ export default function LoginForm({ nextPath }: { nextPath?: string }) {
         await login(value);
         await openSession();
       } catch (error) {
-        setErrorMessage(loginErrorMessage(error));
+        setErrorMessage(toastError(loginErrorMessage(error)));
       } finally {
         setPending(false);
       }
     },
   });
 
-  function fillDemoAccount(account: DemoAccount) {
+  async function signInDemo(account: DemoAccount) {
     form.setFieldValue("email", account.email);
     form.setFieldValue("password", account.password);
     setSelectedDemo(account.id);
     setErrorMessage(null);
+    setPending(true);
+    try {
+      await login({ email: account.email, password: account.password });
+      await openSession();
+    } catch (error) {
+      setErrorMessage(toastError(loginErrorMessage(error)));
+    } finally {
+      setPending(false);
+    }
   }
 
   useEffect(() => {
     const account = takeDemoAccount();
     if (!account) return;
-    fillDemoAccount(account);
+    void signInDemo(account);
   }, []);
 
   return (
     <div className="flex flex-col gap-5">
       <h1 className="sr-only">Sign in</h1>
-      <DemoLogin selectedId={selectedDemo} onSelect={fillDemoAccount} />
+      <DemoLogin selectedId={selectedDemo} disabled={pending} onSelect={signInDemo} />
 
       <div className="flex items-center gap-3 text-xs tracking-[0.16em] text-muted-foreground">
         <span className="h-px flex-1 bg-border" />
