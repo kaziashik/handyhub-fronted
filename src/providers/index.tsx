@@ -1,7 +1,8 @@
 "use client";
 
 import { useMe } from "@/hooks/use-me";
-import { ReactNode } from "react";
+import { applyTheme, readStoredTheme } from "@/lib/theme";
+import { ReactNode, useLayoutEffect } from "react";
 import QueryProvider from "./query.provider";
 
 function LoadCurrentUser() {
@@ -9,9 +10,17 @@ function LoadCurrentUser() {
   return null;
 }
 
+function ThemeSync() {
+  useLayoutEffect(() => {
+    applyTheme(readStoredTheme());
+  }, []);
+  return null;
+}
+
 export default function Providers({ children }: { children: ReactNode }) {
   return (
     <QueryProvider>
+      <ThemeSync />
       <LoadCurrentUser />
       {children}
     </QueryProvider>

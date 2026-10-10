@@ -1,14 +1,15 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { applyTheme, readStoredTheme } from "@/lib/theme";
 import { Moon, Sun } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 
 export function ThemeToggle() {
   const [dark, setDark] = useState(false);
 
-  useEffect(() => {
-    setDark(document.documentElement.classList.contains("dark"));
+  useLayoutEffect(() => {
+    setDark(readStoredTheme() === "dark");
   }, []);
 
   return (
@@ -18,9 +19,9 @@ export function ThemeToggle() {
       size="icon"
       aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
       onClick={() => {
-        const next = !document.documentElement.classList.contains("dark");
-        document.documentElement.classList.toggle("dark", next);
-        setDark(next);
+        const next = dark ? "light" : "dark";
+        applyTheme(next);
+        setDark(next === "dark");
       }}
     >
       {dark ? <Sun /> : <Moon />}
